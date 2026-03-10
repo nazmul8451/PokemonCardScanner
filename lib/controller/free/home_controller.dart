@@ -103,6 +103,7 @@ class HomeController extends ChangeNotifier {
         totalVolume: 120000,
         avgPrice: 200,
         avatarColor: const Color(0xFFFFCB05),
+        changePercent: 12.5,
         imageUrl: 'assets/images/pokemon.png',
       ),
       MarketVolumeModel(
@@ -112,6 +113,7 @@ class HomeController extends ChangeNotifier {
         totalVolume: 95000,
         avgPrice: 112,
         avatarColor: const Color(0xFFE74C3C),
+        changePercent: 12.5,
         imageUrl: 'assets/images/img.png',
       ),
       MarketVolumeModel(
@@ -121,6 +123,7 @@ class HomeController extends ChangeNotifier {
         totalVolume: 45000,
         avgPrice: 72,
         avatarColor: const Color(0xFF9B59B6),
+        changePercent: -3.2,
         imageUrl: 'assets/images/Container_4.png',
       ),
     ];

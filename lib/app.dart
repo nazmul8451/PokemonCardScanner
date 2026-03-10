@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'core/constants/app_colors.dart';
 import 'controller/free/home_controller.dart';
 import 'controller/free/markets_controller.dart';
+import 'controller/free/scan_controller.dart';
 import 'presentation/free/dashboard/bottomNavigationBar/bottom_navigation.dart';
 
 class App extends StatelessWidget {
@@ -20,6 +21,7 @@ class App extends StatelessWidget {
           providers: [
             ChangeNotifierProvider(create: (_) => HomeController()),
             ChangeNotifierProvider(create: (_) => MarketsController()),
+            ChangeNotifierProvider(create: (_) => ScanController()),
           ],
           child: MaterialApp(
             title: 'Dashboard',

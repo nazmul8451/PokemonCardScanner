@@ -6,7 +6,7 @@ import '../../../../core/constants/app_text_styles.dart';
 import '../../../../controller/free/markets_controller.dart';
 import '../../../../core/models/market_volume_model.dart';
 import '../../../../core/models/trending_item_model.dart';
-import '../../../commonWidgets/app_card.dart';
+import '../../../commonWidgets/common_widgets.dart';
 
 class MarketsScreen extends StatefulWidget {
   const MarketsScreen({super.key});
@@ -87,7 +87,11 @@ class _MarketsBody extends StatelessWidget {
             childCount: controller.marketVolumes.length,
           ),
         ),
-        SliverToBoxAdapter(child: _ProfessionalInsightsCard()),
+        SliverToBoxAdapter(
+          child: ProfessionalInsightsCard(
+            margin: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 0),
+          ),
+        ),
         SliverToBoxAdapter(
           child: Padding(
             padding: EdgeInsets.fromLTRB(16.w, 32.h, 16.w, 16.h),
@@ -258,13 +262,21 @@ class _MarketVolumeCard extends StatelessWidget {
               Row(
                 children: [
                   Icon(
-                    Icons.arrow_upward_rounded,
-                    color: AppColors.positive,
+                    item.changePercent >= 0
+                        ? Icons.arrow_upward_rounded
+                        : Icons.arrow_downward_rounded,
+                    color: item.changePercent >= 0
+                        ? AppColors.positive
+                        : AppColors.negative,
                     size: 12.sp,
                   ),
                   Text(
-                    ' 12.5%',
-                    style: AppTextStyles.positive.copyWith(fontSize: 11.sp),
+                    ' ${item.changePercent.abs().toStringAsFixed(1)}%',
+                    style:
+                        (item.changePercent >= 0
+                                ? AppTextStyles.positive
+                                : AppTextStyles.negative)
+                            .copyWith(fontSize: 11.sp),
                   ),
                 ],
               ),
@@ -275,106 +287,6 @@ class _MarketVolumeCard extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ProfessionalInsightsCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return AppCard(
-      margin: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 0),
-      padding: EdgeInsets.all(20.r),
-      color: Colors.transparent,
-      border: Border.all(
-        color: const Color(0xFFFFD700).withOpacity(0.3),
-        width: 1.w,
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFF1A1A1A),
-              const Color(0xFFFFD700).withOpacity(0.05),
-            ],
-          ),
-        ),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.diamond_outlined,
-                  color: const Color(0xFFFFD700),
-                  size: 24.sp,
-                ),
-                SizedBox(width: 12.w),
-                Text(
-                  'Professional Insights',
-                  style: AppTextStyles.titleMedium.copyWith(
-                    fontSize: 18.sp,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 12.h),
-            Text(
-              'Unlock real-time market movers, depth charts, and AI-powered buying signals.',
-              style: AppTextStyles.bodySmall.copyWith(
-                fontSize: 13.sp,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            SizedBox(height: 20.h),
-            _GradientButton(onTap: () {}, label: 'Go Professional'),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _GradientButton extends StatelessWidget {
-  const _GradientButton({required this.onTap, required this.label});
-  final VoidCallback onTap;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(vertical: 14.h),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFFF1C40F), Color(0xFFE67E22)],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-          borderRadius: BorderRadius.circular(12.r),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFFF39C12).withOpacity(0.3),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w700,
-              fontSize: 16.sp,
-            ),
-          ),
-        ),
       ),
     );
   }

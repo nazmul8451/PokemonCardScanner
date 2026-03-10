@@ -9,7 +9,7 @@ import '../home/home_screen.dart';
 // ADD YOUR OTHER SCREENS HERE – just import them and place them in _screens list
 // ─────────────────────────────────────────────────────────────────────────────
 import '../markets/markets_screen.dart';
-// import '../free/dashboard/scan/scan_screen.dart';
+import '../scan/scan_screen.dart';
 // import '../free/dashboard/wallet/wallet_screen.dart';
 // import '../free/dashboard/profile/profile_screen.dart';
 
@@ -57,7 +57,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   late final List<Widget> _screens = [
     const HomeScreen(),
     const MarketsScreen(),
-    _placeholder('Scan'),
+    const ScanScreen(),
     _placeholder('Wallet'),
     _placeholder('Profile'),
   ];

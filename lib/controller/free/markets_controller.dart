@@ -28,6 +28,7 @@ class MarketsController extends ChangeNotifier {
         totalVolume: 120000,
         avgPrice: 200,
         avatarColor: Color(0xFFFFCB05),
+        changePercent: 12.5,
         imageUrl: 'assets/images/pokemon.png',
       ),
       const MarketVolumeModel(
@@ -37,6 +38,7 @@ class MarketsController extends ChangeNotifier {
         totalVolume: 120000,
         avgPrice: 200,
         avatarColor: Color(0xFFE74C3C),
+        changePercent: 12.5,
         imageUrl: 'assets/images/img.png',
       ),
       const MarketVolumeModel(
@@ -46,6 +48,7 @@ class MarketsController extends ChangeNotifier {
         totalVolume: 45000,
         avgPrice: 72,
         avatarColor: Color(0xFF9B59B6),
+        changePercent: -3.2,
         imageUrl: 'assets/images/Container_4.png',
       ),
       const MarketVolumeModel(
@@ -55,6 +58,7 @@ class MarketsController extends ChangeNotifier {
         totalVolume: 120000,
         avgPrice: 200,
         avatarColor: Color(0xFF2ECC71),
+        changePercent: 12.5,
         imageUrl: 'assets/images/Container_1.png',
       ),
       const MarketVolumeModel(
@@ -64,6 +68,7 @@ class MarketsController extends ChangeNotifier {
         totalVolume: 120000,
         avgPrice: 200,
         avatarColor: Color(0xFF3498DB),
+        changePercent: 12.5,
         imageUrl: 'assets/images/Container.png',
       ),
     ];

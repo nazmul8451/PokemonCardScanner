@@ -9,6 +9,7 @@ class MarketVolumeModel {
     required this.totalVolume,
     required this.avgPrice,
     required this.avatarColor,
+    required this.changePercent,
     this.imageUrl,
   });
 
@@ -25,6 +26,9 @@ class MarketVolumeModel {
 
   /// Average sale price in EUR
   final double avgPrice;
+
+  /// Percentage change
+  final double changePercent;
 
   /// Placeholder colour until image loads from API
   final Color avatarColor;

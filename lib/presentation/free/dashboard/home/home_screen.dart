@@ -8,8 +8,9 @@ import '../../../../core/models/market_volume_model.dart';
 import '../../../../core/models/chart_data_model.dart';
 import '../../../../core/models/wallet_model.dart';
 import '../../../../controller/free/home_controller.dart';
-import '../../../commonWidgets/app_card.dart';
-import '../../../commonWidgets/section_header.dart';
+import '../../../commonWidgets/common_widgets.dart';
+import '../../../../presentation/commonWidgets/section_header.dart';
+import '../professional/professional_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -213,6 +214,11 @@ class _DashboardBody extends StatelessWidget {
         ),
         // Explore All Markets button
         SliverToBoxAdapter(child: _ExploreButton()),
+        SliverToBoxAdapter(
+          child: ProfessionalInsightsCard(
+            margin: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 32.h),
+          ),
+        ),
         const SliverToBoxAdapter(child: SizedBox(height: 24)),
       ],
     );
@@ -312,7 +318,17 @@ class _TabRow extends StatelessWidget {
         children: [
           _Tab(label: 'Dashboard', isActive: true),
           const SizedBox(width: 20),
-          _Tab(label: 'Professional', isActive: false, hasBadge: true),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProfessionalScreen(),
+                ),
+              );
+            },
+            child: _Tab(label: 'Professional', isActive: false, hasBadge: true),
+          ),
         ],
       ),
     );
