@@ -6,7 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../commonWidgets/common_widgets.dart';
 import '../professional/professional_screen.dart';
-import 'camera_scan_screen.dart';
+import 'scan_result_screen.dart';
 
 class ScanScreen extends StatelessWidget {
   const ScanScreen({super.key});
@@ -232,7 +232,7 @@ class ScanScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const CameraScanScreen(),
+                          builder: (context) => const ScanResultScreen(),
                         ),
                       );
                       if (!controller.isScanning) {

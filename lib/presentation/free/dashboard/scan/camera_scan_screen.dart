@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:camera/camera.dart';
 import '../../../../controller/free/scan_controller.dart';
 import '../../../commonWidgets/common_widgets.dart';
+import 'scan_result_screen.dart';
 
 class CameraScanScreen extends StatefulWidget {
   const CameraScanScreen({super.key});
@@ -233,7 +234,16 @@ class _CameraScanScreenState extends State<CameraScanScreen> {
                 ),
                 SizedBox(height: 32.h),
                 GestureDetector(
-                  onTap: () => setState(() => _showDialog = false),
+                  onTap: () {
+                    setState(() => _showDialog = false);
+                    // For demo purposes, we can navigate to results after dialogue
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ScanResultScreen(),
+                      ),
+                    );
+                  },
                   child: Text(
                     "Got it, let's go!",
                     style: TextStyle(

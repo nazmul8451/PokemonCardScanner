@@ -10,8 +10,8 @@ import '../home/home_screen.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 import '../markets/markets_screen.dart';
 import '../scan/scan_screen.dart';
-// import '../free/dashboard/wallet/wallet_screen.dart';
-// import '../free/dashboard/profile/profile_screen.dart';
+import '../wallet/wallet_screen.dart';
+import '../profile/profile_screen.dart';
 
 /// Entry-point widget that wraps every dashboard screen with the custom
 /// bottom navigation bar.
@@ -58,16 +58,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
     const HomeScreen(),
     const MarketsScreen(),
     const ScanScreen(),
-    _placeholder('Wallet'),
-    _placeholder('Profile'),
+    const WalletScreen(),
+    const ProfileScreen(),
   ];
-
-  static Widget _placeholder(String name) => Center(
-    child: Text(
-      name,
-      style: TextStyle(color: AppColors.textSecondary, fontSize: 20.sp),
-    ),
-  );
 
   void _onItemTapped(int index) {
     if (index == _currentIndex) return;
