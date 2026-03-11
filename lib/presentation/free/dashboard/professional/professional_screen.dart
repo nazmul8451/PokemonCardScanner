@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../../controller/subscription_controller.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../commonWidgets/common_widgets.dart';
@@ -19,9 +21,7 @@ class _ProfessionalScreenState extends State<ProfessionalScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Container(
-        decoration: BoxDecoration(
-      
-        ),
+        decoration: BoxDecoration(),
         child: SafeArea(
           child: Column(
             children: [
@@ -42,7 +42,9 @@ class _ProfessionalScreenState extends State<ProfessionalScreen> {
                       _buildFeaturesList(),
                       SizedBox(height: 40.h),
                       AppPremiumButton(
-                        onTap: () {},
+                        onTap: () {
+                          context.read<SubscriptionController>().toggleSubscription();
+                        },
                         label: 'Upgrade to Professional',
                         height: 60.h,
                       ),

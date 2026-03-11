@@ -12,16 +12,15 @@ import '../markets/markets_screen.dart';
 import '../scan/scan_screen.dart';
 import '../wallet/wallet_screen.dart';
 import '../profile/profile_screen.dart';
+import 'package:provider/provider.dart';
+import '../../../../controller/subscription_controller.dart';
+import '../../../pro/home/pro_home_screen.dart';
+import '../../../pro/market/pro_market_screen.dart';
+import '../../../pro/scan/pro_scanner_screen.dart';
+import '../../../pro/wallet/pro_wallet_screen.dart';
 
 /// Entry-point widget that wraps every dashboard screen with the custom
 /// bottom navigation bar.
-///
-/// To add a new screen:
-/// 1. Create your screen Widget.
-/// 2. Import it above.
-/// 3. Add a [_NavItem] entry to [_items].
-/// 4. Add your Widget instance to [_screens].
-/// That's it – navigation works automatically.
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});
 
@@ -53,14 +52,24 @@ class _BottomNavigationState extends State<BottomNavigation> {
   ];
 
   // ── Screens list – each index corresponds to a nav item ───────────────────
-  // Replace the placeholder Containers with real screen widgets as you build them.
-  late final List<Widget> _screens = [
-    const HomeScreen(),
-    const MarketsScreen(),
-    const ScanScreen(),
-    const WalletScreen(),
-    const ProfileScreen(),
-  ];
+  List<Widget> _getScreens(bool isPro) {
+    if (isPro) {
+      return [
+        const ProHomeScreen(),
+        const ProMarketAnalysisScreen(),
+        const ProScannerScreen(),
+        const ProWalletScreen(),
+        const ProfileScreen(),
+      ];
+    }
+    return [
+      const HomeScreen(),
+      const MarketsScreen(),
+      const ScanScreen(),
+      const WalletScreen(),
+      const ProfileScreen(),
+    ];
+  }
 
   void _onItemTapped(int index) {
     if (index == _currentIndex) return;
@@ -72,6 +81,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    final isPro = context.watch<SubscriptionController>().isPro;
+    final screens = _getScreens(isPro);
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -79,7 +91,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
       ),
       child: Scaffold(
         backgroundColor: AppColors.background,
-        body: IndexedStack(index: _currentIndex, children: _screens),
+        body: IndexedStack(index: _currentIndex, children: screens),
         bottomNavigationBar: _AppBottomNavBar(
           currentIndex: _currentIndex,
           items: _items,
@@ -96,7 +108,7 @@ class _AppBottomNavBar extends StatelessWidget {
   const _AppBottomNavBar({
     required this.currentIndex,
     required this.items,
-    required this.onTap,
+    required this.onTap, 
   });
 
   final int currentIndex;
