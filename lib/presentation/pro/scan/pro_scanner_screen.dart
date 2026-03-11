@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProScannerScreen extends StatefulWidget {
-  const ProScannerScreen({super.key});
+  final VoidCallback? onAddToWallet;
+
+  const ProScannerScreen({super.key, this.onAddToWallet});
 
   @override
   State<ProScannerScreen> createState() => _ProScannerScreenState();
@@ -157,7 +159,7 @@ class _ProScannerScreenState extends State<ProScannerScreen> {
 
   Widget _buildScannerPlaceholder(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(24.r),
+      padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
         color: const Color(0xFF161719),
         borderRadius: BorderRadius.circular(24.r),
@@ -165,20 +167,32 @@ class _ProScannerScreenState extends State<ProScannerScreen> {
       ),
       child: Column(
         children: [
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 40.h, horizontal: 20.w),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A1A1A),
+              borderRadius: BorderRadius.circular(20.r),
+              border: Border.all(color: const Color(0xFFFFCC00).withOpacity(0.15)),
+            ),
+            child: Column(
+              children: [
+                Icon(Icons.camera_alt_outlined, color: const Color(0xFFFFCC00), size: 72.sp),
+                SizedBox(height: 24.h),
+                Text(
+                  'Advanced Card Scanner',
+                  style: TextStyle(color: Colors.white, fontSize: 18.sp, fontWeight: FontWeight.w800),
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  'AI-powered condition\nanalysis • Grading\nsuggestions',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 14.sp, height: 1.4),
+                ),
+              ],
+            ),
+          ),
           SizedBox(height: 32.h),
-          Icon(Icons.camera_alt_outlined, color: const Color(0xFFFFCC00), size: 72.sp),
-          SizedBox(height: 24.h),
-          Text(
-            'Advanced Card Scanner',
-            style: TextStyle(color: Colors.white, fontSize: 18.sp, fontWeight: FontWeight.w800),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            'AI-powered condition\nanalysis • Grading\nsuggestions',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 14.sp, height: 1.4),
-          ),
-          SizedBox(height: 48.h),
           GestureDetector(
             onTap: () {
               setState(() {
@@ -203,7 +217,6 @@ class _ProScannerScreenState extends State<ProScannerScreen> {
               ),
             ),
           ),
-          SizedBox(height: 16.h),
         ],
       ),
     );
@@ -479,14 +492,17 @@ class _ProScannerScreenState extends State<ProScannerScreen> {
           ),
           SizedBox(width: 12.w),
           Expanded(
-            child: Container(
-              height: 48.h,
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E1C12),
-                borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(color: const Color(0xFFFFCC00).withOpacity(0.2)),
+            child: GestureDetector(
+              onTap: widget.onAddToWallet,
+              child: Container(
+                height: 48.h,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E1C12),
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(color: const Color(0xFFFFCC00).withOpacity(0.2)),
+                ),
+                child: Center(child: Text('Add to Wallet', style: TextStyle(color: const Color(0xFFFFCC00), fontSize: 14.sp, fontWeight: FontWeight.w600))),
               ),
-              child: Center(child: Text('Add to Wallet', style: TextStyle(color: const Color(0xFFFFCC00), fontSize: 14.sp, fontWeight: FontWeight.w600))),
             ),
           ),
           SizedBox(width: 12.w),

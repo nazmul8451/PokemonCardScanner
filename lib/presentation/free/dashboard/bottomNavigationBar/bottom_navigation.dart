@@ -58,7 +58,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
       return [
         const ProHomeScreen(),
         const ProMarketAnalysisScreen(),
-        const ProScannerScreen(),
+        ProScannerScreen(
+          onAddToWallet: () {
+            _onItemTapped(3); // Navigation to Wallet Tab
+          },
+        ),
         const ProWalletScreen(),
         const ProProfileScreen(),
       ];
