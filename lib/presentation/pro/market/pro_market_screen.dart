@@ -7,70 +7,72 @@ class ProMarketAnalysisScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFF0B0E11),
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildSearchBar(),
-                    SizedBox(height: 24.h),
-                    _buildSectionHeader('Market Analysis', showTimer: true),
-                    SizedBox(height: 16.h),
-                    _buildMarketCard(
-                      'Pokémon',
-                      'assets/images/pokemon_bg.png', // Placeholder
-                      '\$120K',
-                      '1,300',
-                      '\$200',
-                    ),
-                    SizedBox(height: 12.h),
-                    _buildMarketCard(
-                      'One Piece',
-                      'assets/images/one_piece_bg.png', // Placeholder
-                      '\$120K',
-                      '850',
-                      '\$200',
-                    ),
-                    SizedBox(height: 12.h),
-                    _buildMarketCard(
-                      'Yu-Gi-Oh!',
-                      'assets/images/yugioh_bg.png', // Placeholder
-                      '\$120K',
-                      '620',
-                      '\$200',
-                    ),
-                    SizedBox(height: 32.h),
-                    _buildSectionHeader('Trending Now', showTimer: false),
-                    SizedBox(height: 16.h),
-                    _buildTrendingItem(
-                      'Luffy Gear 5',
-                      'OP-05',
-                      '\$245.5',
-                      '+67.8%',
-                      true,
-                    ),
-                    SizedBox(height: 12.h),
-                    _buildTrendingItem(
-                      'Charizard VMAX',
-                      'CP',
-                      '\$589.99',
-                      '-15.2%',
-                      false,
-                    ),
-                    SizedBox(height: 40.h),
-                  ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSearchBar(),
+                      SizedBox(height: 24.h),
+                      _buildSectionHeader('Market Analysis', showTimer: true),
+                      SizedBox(height: 16.h),
+                      _buildMarketCard(
+                        'Pokémon',
+                        'assets/images/pokemon_bg.png', // Placeholder
+                        '\$120K',
+                        '1,300',
+                        '\$200',
+                      ),
+                      SizedBox(height: 12.h),
+                      _buildMarketCard(
+                        'One Piece',
+                        'assets/images/one_piece_bg.png', // Placeholder
+                        '\$120K',
+                        '850',
+                        '\$200',
+                      ),
+                      SizedBox(height: 12.h),
+                      _buildMarketCard(
+                        'Yu-Gi-Oh!',
+                        'assets/images/yugioh_bg.png', // Placeholder
+                        '\$120K',
+                        '620',
+                        '\$200',
+                      ),
+                      SizedBox(height: 32.h),
+                      _buildSectionHeader('Trending Now', showTimer: false),
+                      SizedBox(height: 16.h),
+                      _buildTrendingItem(
+                        'Luffy Gear 5',
+                        'OP-05',
+                        '\$245.5',
+                        '+67.8%',
+                        true,
+                      ),
+                      SizedBox(height: 12.h),
+                      _buildTrendingItem(
+                        'Charizard VMAX',
+                        'CP',
+                        '\$589.99',
+                        '-15.2%',
+                        false,
+                      ),
+                      SizedBox(height: 40.h),
+                    ],
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

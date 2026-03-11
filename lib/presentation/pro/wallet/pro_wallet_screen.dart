@@ -1,234 +1,281 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class ProWalletScreen extends StatelessWidget {
+class ProWalletScreen extends StatefulWidget {
   const ProWalletScreen({super.key});
+
+  @override
+  State<ProWalletScreen> createState() => _ProWalletScreenState();
+}
+
+class _ProWalletScreenState extends State<ProWalletScreen> {
+  String _selectedTimeFilter = '1M';
+  double? _scrubX;
+
+  final List<double> chartPoints = [0.2, 0.25, 0.23, 0.4, 0.5, 0.48, 0.55, 0.7, 0.65, 0.8, 0.85, 0.8];
+
+  void _updateScrubPosition(double localX) {
+    if (_scrubX != localX) {
+      setState(() {
+        _scrubX = localX;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildAppBar(),
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20.h),
-                    _buildBalanceHeader(),
-                    SizedBox(height: 24.h),
-                    _buildChartPlaceholder(),
-                    SizedBox(height: 24.h),
-                    _buildTimeFilter(),
-                    SizedBox(height: 32.h),
-                    Text(
-                      'Market Volume',
-                      style: TextStyle(color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.w800),
-                    ),
-                    SizedBox(height: 16.h),
-                    _buildSectionItem('Pokémon', '1.3K Sold', '\$120K Vol'),
-                    _buildSectionItem('One Piece', '850 Sold', '\$120K Vol'),
-                    SizedBox(height: 32.h),
-                    _buildAlgorithmPredictions(),
-                    SizedBox(height: 40.h),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+      backgroundColor: const Color(0xFF0B0E11), // Dark background
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF0B0E11),
+        elevation: 0,
+        centerTitle: true,
+        title: Text('Wallet', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 16.sp, fontWeight: FontWeight.w700)),
       ),
-    );
-  }
-
-  Widget _buildAppBar() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CircleAvatar(radius: 18.r, backgroundColor: const Color(0xFF121212), child: Icon(Icons.person, size: 18.sp, color: Colors.white24)),
-              SizedBox(width: 10.w),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Ibrahim', style: TextStyle(color: Colors.white, fontSize: 14.sp, fontWeight: FontWeight.w700)),
-                  Text('Professional', style: TextStyle(color: const Color(0xFFFFD700), fontSize: 10.sp, fontWeight: FontWeight.w600)),
-                ],
+              SizedBox(height: 12.h),
+              _buildBalance(),
+              SizedBox(height: 32.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: _buildActionsRow(),
               ),
+              SizedBox(height: 48.h),
+              _buildChart(),
+              SizedBox(height: 32.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: _buildTimeFilter(),
+              ),
+              SizedBox(height: 40.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: _buildGrid(),
+              ),
+              SizedBox(height: 40.h),
             ],
           ),
-          IconButton(onPressed: () {}, icon: Icon(Icons.notifications_none_rounded, color: Colors.white, size: 24.sp)),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildBalanceHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildBalance() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Row(
-          children: [
-            Text('Wallet ', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 16.sp)),
-            Text('Predict', style: TextStyle(color: const Color(0xFFFFD700), fontSize: 16.sp, fontWeight: FontWeight.w700)),
-            const Spacer(),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
-              decoration: BoxDecoration(color: Colors.blue.withOpacity(0.2), borderRadius: BorderRadius.circular(4.r)),
-              child: Text('EUR', style: TextStyle(color: Colors.blue, fontSize: 10.sp, fontWeight: FontWeight.w800)),
-            ),
-          ],
-        ),
-        SizedBox(height: 8.h),
-        Row(
-          children: [
-            Text('€64,650.03', style: TextStyle(color: Colors.white, fontSize: 36.sp, fontWeight: FontWeight.w900)),
-            SizedBox(width: 12.w),
-            Icon(Icons.visibility_outlined, color: Colors.white.withOpacity(0.3), size: 24.sp),
-          ],
-        ),
-        SizedBox(height: 4.h),
-        Text('+€10,000.00 in the last 30 days', style: TextStyle(color: Colors.greenAccent, fontSize: 13.sp, fontWeight: FontWeight.w600)),
+        Text('\$1,312.07', style: TextStyle(color: Colors.white, fontSize: 36.sp, fontWeight: FontWeight.w900)),
+        SizedBox(width: 12.w),
+        Icon(Icons.visibility_outlined, color: Colors.white.withOpacity(0.3), size: 22.sp),
       ],
     );
   }
 
-  Widget _buildChartPlaceholder() {
-    return Container(
-      height: 200.h,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFF0A0A0A),
-        borderRadius: BorderRadius.circular(24.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Center(
-        child: Stack(
-          children: [
-            // Simplified "Chart" using CustomPaint would be better, but for now a styled placeholder
-            Positioned.fill(
-              child: Opacity(
-                opacity: 0.2,
-                child: CustomPaint(painter: _ChartPainter()),
-              ),
-            ),
-            Center(
-              child: Container(
-                padding: EdgeInsets.all(12.r),
-                decoration: BoxDecoration(color: const Color(0xFF1A1A1A), borderRadius: BorderRadius.circular(16.r), border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.3))),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildChartRow('Apri:', '485,1 €'),
-                    _buildChartRow('Chiudi:', '541,3 €'),
-                    _buildChartRow('Modifica:', '11,59%', color: Colors.orange),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+  Widget _buildActionsRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _buildActionItem(Icons.auto_graph_rounded, 'Top Performers'),
+        _buildActionItem(Icons.add, 'Add'),
+        _buildActionItem(Icons.ios_share, 'Share'),
+        _buildActionItem(Icons.send_rounded, 'Export'),
+      ],
     );
   }
 
-  Widget _buildChartRow(String label, String value, {Color? color}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 2.h),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+  Widget _buildActionItem(IconData icon, String label) {
+    return Column(
+      children: [
+        Container(
+          width: 56.r,
+          height: 56.r,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.transparent,
+            border: Border.all(color: const Color(0xFF00E5FF).withOpacity(0.3), width: 1.5),
+          ),
+          child: Center(
+            child: Icon(icon, color: const Color(0xFF00E5FF), size: 24.sp),
+          ),
+        ),
+        SizedBox(height: 8.h),
+        Text(label, style: TextStyle(color: const Color(0xFF00E5FF), fontSize: 11.sp, fontWeight: FontWeight.w700)),
+      ],
+    );
+  }
+
+  Widget _buildChart() {
+    return SizedBox(
+      height: 180.h,
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          Text(label, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12.sp)),
-          SizedBox(width: 12.w),
-          Text(value, style: TextStyle(color: color ?? Colors.white, fontSize: 12.sp, fontWeight: FontWeight.w800)),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            top: 0,
+            child: GestureDetector(
+              onHorizontalDragUpdate: (details) {
+                _updateScrubPosition(details.localPosition.dx);
+              },
+              onTapDown: (details) {
+                _updateScrubPosition(details.localPosition.dx);
+              },
+              onHorizontalDragEnd: (_) {
+                setState(() {
+                  _scrubX = null;
+                });
+              },
+              onTapUp: (_) {
+                setState(() {
+                  _scrubX = null;
+                });
+              },
+              child: Container(
+                color: Colors.transparent,
+                child: CustomPaint(painter: _WalletChartPainter(const Color(0xFF00E5FF), chartPoints, _scrubX)),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildTimeFilter() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: ['+1M', '+3M', '+6M', '+1Y', '+3Y', '+5Y'].map((t) {
-        bool isSelected = t == '+3Y';
-        return Container(
-          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(20.r),
-          ),
-          child: Text(t, style: TextStyle(color: isSelected ? Colors.black : Colors.white.withOpacity(0.4), fontSize: 12.sp, fontWeight: FontWeight.w800)),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildSectionItem(String name, String sold, String vol) {
     return Container(
-      margin: EdgeInsets.only(bottom: 12.h),
-      padding: EdgeInsets.all(16.r),
-      decoration: BoxDecoration(color: const Color(0xFF141414), borderRadius: BorderRadius.circular(20.r), border: Border.all(color: Colors.white.withOpacity(0.05))),
+      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: const Color(0xFF141414),
+        borderRadius: BorderRadius.circular(16.r),
+      ),
       child: Row(
-        children: [
-          Container(width: 44.r, height: 44.r, decoration: const BoxDecoration(color: Color(0xFF1A1A1A), shape: BoxShape.circle), child: const Icon(Icons.apps, color: Colors.white24)),
-          SizedBox(width: 16.w),
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(name, style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.w700)),
-            Text(sold, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12.sp)),
-          ]),
-          const Spacer(),
-          Text(vol, style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.w800)),
-        ],
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: ['1D', '7D', '1M', '3M', '6M', 'ALL'].map((t) {
+          bool isSelected = _selectedTimeFilter == t;
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedTimeFilter = t;
+                _scrubX = null;
+              });
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+              decoration: BoxDecoration(
+                color: isSelected ? const Color(0xFF2A2A2A) : Colors.transparent,
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Text(t, style: TextStyle(color: isSelected ? Colors.white : Colors.white.withOpacity(0.4), fontSize: 13.sp, fontWeight: FontWeight.w800)),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
 
-  Widget _buildAlgorithmPredictions() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildGrid() {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      crossAxisSpacing: 12.w,
+      mainAxisSpacing: 16.h,
+      childAspectRatio: 0.48, // Adjusted for taller cards to match mockup
       children: [
-        Text('Algorithm Price Predictions', style: TextStyle(color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.w800)),
-        SizedBox(height: 16.h),
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          mainAxisSpacing: 12.h,
-          crossAxisSpacing: 12.w,
-          childAspectRatio: 1.4,
-          children: [
-            _buildPredictCard('3M', '\$650', '+10.2%', '97%'),
-            _buildPredictCard('6M', '\$720', '+22.0%', '88%'),
-          ],
+        _buildCardItem(
+          'assets/images/card1.png', 
+          'Charizard VMAX', 'Shining Fates: Shiny Vault\nShiny Holo Rare • SV107/SV122',
+          'Near Mint', 'Holofoil', '1+', '\$158.96', '\$8.92 (5.95%)', true,
+        ),
+        _buildCardItem(
+          'assets/images/card2.png', 
+          'Charizard', 'Celebrations: Classic Collection\nClassic Collection • 4/102',
+          'Near Mint', 'Holofoil', '1+', '\$144.00', '\$0.79 (0.55%)', true,
+        ),
+        _buildCardItem(
+          'assets/images/card3.png', 
+          'M Charizard EX', 'Evolutions\nUltra Rare • 13/108',
+          'Near Mint', 'Holofoil', '1+', '\$84.50', '\$2.30 (1.20%)', false,
+        ),
+        _buildCardItem(
+          'assets/images/card4.png', 
+          'Sephiroth - 11-130L (Full Art)', 'Opus XI\nLegend • 11-130L',
+          'Near Mint', 'Foil', '1+', '\$45.00', '\$1.15 (2.10%)', true,
         ),
       ],
     );
   }
 
-  Widget _buildPredictCard(String time, String price, String change, String conf) {
+  Widget _buildCardItem(String img, String title, String subtitle, String condition, String attribute, String qty, String price, String changeAmt, bool isUp) {
     return Container(
-      padding: EdgeInsets.all(16.r),
-      decoration: BoxDecoration(color: const Color(0xFF141414), borderRadius: BorderRadius.circular(20.r), border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.1))),
+      decoration: BoxDecoration(
+        color: const Color(0xFF090909), // Very dark card background
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: Colors.white.withOpacity(0.05)), // Subtle border from design
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(time, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12.sp)),
-          Text(price, style: TextStyle(color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.w900)),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(change, style: TextStyle(color: Colors.greenAccent, fontSize: 12.sp, fontWeight: FontWeight.w700)),
-              Text('Conf: $conf', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 10.sp)),
-            ],
+          Expanded(
+            flex: 5,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(16.r), topRight: Radius.circular(16.r)),
+                image: DecorationImage(image: AssetImage(img), fit: BoxFit.cover),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 4,
+            child: Padding(
+              padding: EdgeInsets.all(12.r),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: TextStyle(color: Colors.white, fontSize: 14.sp, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  SizedBox(height: 4.h),
+                  Text(subtitle, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 10.sp, height: 1.3), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  SizedBox(height: 8.h),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(condition, style: TextStyle(color: const Color(0xFF00E5FF), fontSize: 11.sp, fontWeight: FontWeight.w700)),
+                      Text(' • $attribute', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.sp)),
+                    ],
+                  ),
+                  const Spacer(),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Qty: $qty', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.sp)),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(price, style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.w900, fontFamily: 'Inter')),
+                          SizedBox(height: 2.h),
+                          Row(
+                            children: [
+                              Icon(isUp ? Icons.arrow_drop_up : Icons.arrow_drop_down, color: isUp ? Colors.greenAccent : Colors.redAccent, size: 14.sp),
+                              Text(changeAmt, style: TextStyle(color: isUp ? Colors.greenAccent : Colors.redAccent, fontSize: 10.sp, fontWeight: FontWeight.w700)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -236,16 +283,124 @@ class ProWalletScreen extends StatelessWidget {
   }
 }
 
-class _ChartPainter extends CustomPainter {
+class _WalletChartPainter extends CustomPainter {
+  final Color chartColor;
+  final List<double> normalizedPoints;
+  final double? scrubX;
+
+  _WalletChartPainter(this.chartColor, this.normalizedPoints, this.scrubX);
+
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = const Color(0xFFFFD700)..strokeWidth = 2..style = PaintingStyle.stroke;
+    if (normalizedPoints.isEmpty) return;
+
+    final paint = Paint()
+      ..color = chartColor
+      ..strokeWidth = 2.5
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..style = PaintingStyle.stroke;
+
     final path = Path();
-    path.moveTo(0, size.height * 0.8);
-    path.quadraticBezierTo(size.width * 0.25, size.height * 0.7, size.width * 0.5, size.height * 0.4);
-    path.quadraticBezierTo(size.width * 0.75, size.height * 0.1, size.width, size.height * 0.2);
+    final fillPath = Path();
+    
+    final double stepX = size.width / (normalizedPoints.length - 1);
+    
+    double startY = size.height - (normalizedPoints[0] * size.height);
+    path.moveTo(0, startY);
+    fillPath.moveTo(0, size.height);
+    fillPath.lineTo(0, startY);
+
+    List<Offset> pointCoordinates = [Offset(0, startY)];
+
+    for (int i = 1; i < normalizedPoints.length; i++) {
+        final x = i * stepX;
+        final y = size.height - (normalizedPoints[i] * size.height);
+        pointCoordinates.add(Offset(x, y));
+        
+        final prevX = (i - 1) * stepX;
+        final prevY = size.height - (normalizedPoints[i - 1] * size.height);
+        
+        final controlPointX = prevX + (x - prevX) / 2;
+        
+        path.cubicTo(controlPointX, prevY, controlPointX, y, x, y);
+        fillPath.cubicTo(controlPointX, prevY, controlPointX, y, x, y);
+    }
+    
+    fillPath.lineTo(size.width, size.height);
+    fillPath.close();
+
+    final gradientPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          chartColor.withOpacity(0.3),
+          chartColor.withOpacity(0.0),
+        ],
+      ).createShader(Rect.fromLTRB(0, 0, size.width, size.height))
+      ..style = PaintingStyle.fill;
+      
+    canvas.drawPath(fillPath, gradientPaint);
     canvas.drawPath(path, paint);
+
+    double dotX;
+    double dotY;
+
+    if (scrubX != null) {
+      dotX = scrubX!.clamp(0.0, size.width);
+      
+      int segmentIndex = (dotX / stepX).floor();
+      if (segmentIndex < 0) segmentIndex = 0;
+      if (segmentIndex >= pointCoordinates.length - 1) segmentIndex = pointCoordinates.length - 2;
+
+      Offset p0 = pointCoordinates[segmentIndex];
+      Offset p1 = pointCoordinates[segmentIndex + 1];
+      
+      double t = (dotX - p0.dx) / (p1.dx - p0.dx);
+      t = t.clamp(0.0, 1.0);
+
+      double cpX = p0.dx + (p1.dx - p0.dx) / 2;
+      Offset cp1 = Offset(cpX, p0.dy);
+      Offset cp2 = Offset(cpX, p1.dy);
+
+      final u = 1 - t;
+      final tt = t * t;
+      final uu = u * u;
+      final uuu = uu * u;
+      final ttt = tt * t;
+
+      dotY = uuu * p0.dy;
+      dotY += 3 * uu * t * cp1.dy;
+      dotY += 3 * u * tt * cp2.dy;
+      dotY += ttt * p1.dy;
+    } else {
+      int defaultIndex = normalizedPoints.length - 1;
+      dotX = pointCoordinates[defaultIndex].dx;
+      dotY = pointCoordinates[defaultIndex].dy;
+    }
+
+    final dotPaint = Paint()..color = chartColor..style = PaintingStyle.fill;
+    final dotShadow = Paint()..color = chartColor.withOpacity(0.5)..style = PaintingStyle.fill;
+    
+    Offset dotPos = Offset(dotX, dotY);
+    
+    if (scrubX != null) {
+      final gridPaint = Paint()
+        ..color = chartColor.withOpacity(0.5)
+        ..strokeWidth = 1.5
+        ..style = PaintingStyle.stroke;
+      canvas.drawLine(Offset(dotPos.dx, 0), Offset(dotPos.dx, size.height), gridPaint);
+    }
+    
+    canvas.drawCircle(dotPos, scrubX != null ? 24 : 16, dotShadow);
+    canvas.drawCircle(dotPos, 5, dotPaint);
   }
+
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _WalletChartPainter oldDelegate) {
+    return oldDelegate.chartColor != chartColor || 
+           oldDelegate.normalizedPoints != normalizedPoints ||
+           oldDelegate.scrubX != scrubX;
+  }
 }

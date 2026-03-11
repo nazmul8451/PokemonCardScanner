@@ -27,7 +27,7 @@ class _MarketsScreenState extends State<MarketsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFF0B0E11),
       body: SafeArea(
         child: Consumer<MarketsController>(
           builder: (context, controller, _) {

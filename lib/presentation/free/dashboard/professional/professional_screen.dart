@@ -19,7 +19,7 @@ class _ProfessionalScreenState extends State<ProfessionalScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFF0B0E11),
       body: Container(
         decoration: BoxDecoration(),
         child: SafeArea(

@@ -18,6 +18,7 @@ import '../../../pro/home/pro_home_screen.dart';
 import '../../../pro/market/pro_market_screen.dart';
 import '../../../pro/scan/pro_scanner_screen.dart';
 import '../../../pro/wallet/pro_wallet_screen.dart';
+import '../../../pro/profile/pro_profile_screen.dart';
 
 /// Entry-point widget that wraps every dashboard screen with the custom
 /// bottom navigation bar.
@@ -59,7 +60,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
         const ProMarketAnalysisScreen(),
         const ProScannerScreen(),
         const ProWalletScreen(),
-        const ProfileScreen(),
+        const ProProfileScreen(),
       ];
     }
     return [
@@ -109,17 +110,18 @@ class _AppBottomNavBar extends StatelessWidget {
     required this.currentIndex,
     required this.items,
     required this.onTap, 
-  });
-
+  }); 
+  
+  
+  final ValueChanged<int> onTap;
   final int currentIndex;
   final List<_NavItem> items;
-  final ValueChanged<int> onTap;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.navBarBackground,
+        color: const Color(0xFF0B0E11),
         border: Border(
           top: BorderSide(color: AppColors.divider, width: 0.8.w),
         ),
