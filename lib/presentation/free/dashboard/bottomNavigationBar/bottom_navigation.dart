@@ -56,11 +56,18 @@ class _BottomNavigationState extends State<BottomNavigation> {
   List<Widget> _getScreens(bool isPro) {
     if (isPro) {
       return [
-        const ProHomeScreen(),
+        ProHomeScreen(
+          onProfileTap: () {
+            _onItemTapped(4); // Navigation to Profile Tab
+          },
+        ),
         const ProMarketAnalysisScreen(),
         ProScannerScreen(
           onAddToWallet: () {
             _onItemTapped(3); // Navigation to Wallet Tab
+          },
+          onProfileTap: () {
+            _onItemTapped(4); // Navigation to Profile Tab
           },
         ),
         const ProWalletScreen(),

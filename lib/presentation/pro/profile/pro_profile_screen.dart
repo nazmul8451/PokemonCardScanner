@@ -111,7 +111,7 @@ class _ProProfileScreenState extends State<ProProfileScreen> {
               Row(
                 children: [
                   Text(
-                    'Alex Rivera',
+                    'Ibrahim',
                     style: TextStyle(color: Colors.white, fontSize: 18.sp, fontWeight: FontWeight.w800),
                   ),
                   SizedBox(width: 6.w),

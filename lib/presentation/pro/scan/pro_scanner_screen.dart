@@ -3,8 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProScannerScreen extends StatefulWidget {
   final VoidCallback? onAddToWallet;
+  final VoidCallback? onProfileTap;
 
-  const ProScannerScreen({super.key, this.onAddToWallet});
+  const ProScannerScreen({super.key, this.onAddToWallet, this.onProfileTap});
 
   @override
   State<ProScannerScreen> createState() => _ProScannerScreenState();
@@ -68,39 +69,42 @@ class _ProScannerScreenState extends State<ProScannerScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 40.r,
-                height: 40.r,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFFFCC00), width: 1.5),
-                ),
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/images/profile.png',
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        Icon(Icons.person, color: Colors.white24, size: 20.sp),
+          GestureDetector(
+            onTap: widget.onProfileTap,
+            child: Row(
+              children: [
+                Container(
+                  width: 40.r,
+                  height: 40.r,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0xFFFFCC00), width: 1.5),
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/images/profile.png',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          Icon(Icons.person, color: Colors.white24, size: 20.sp),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(width: 12.w),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Ibrahim', style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.w800)),
-                  Row(
-                    children: [
-                      Icon(Icons.diamond_outlined, color: const Color(0xFFFFCC00), size: 10.sp),
-                      SizedBox(width: 4.w),
-                      Text('Professional', style: TextStyle(color: const Color(0xFFFFCC00), fontSize: 11.sp, fontWeight: FontWeight.w600)),
-                    ],
-                  ),
-                ],
-              ),
-            ],
+                SizedBox(width: 12.w),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Ibrahim', style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.w800)),
+                    Row(
+                      children: [
+                        Icon(Icons.diamond_outlined, color: const Color(0xFFFFCC00), size: 10.sp),
+                        SizedBox(width: 4.w),
+                        Text('Professional', style: TextStyle(color: const Color(0xFFFFCC00), fontSize: 11.sp, fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           Row(
             children: [

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProHomeScreen extends StatefulWidget {
-  const ProHomeScreen({super.key});
+  final VoidCallback? onProfileTap;
+
+  const ProHomeScreen({super.key, this.onProfileTap});
 
   @override
   State<ProHomeScreen> createState() => _ProHomeScreenState();
@@ -91,36 +93,39 @@ class _ProHomeScreenState extends State<ProHomeScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-           Row(
-            children: [
-              Container(
-                width: 44.r,
-                height: 44.r,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.5)),
-                  image: const DecorationImage(
-                    image: AssetImage('assets/images/profile.png'),
-                    fit: BoxFit.cover,
+           GestureDetector(
+             onTap: widget.onProfileTap,
+             child: Row(
+              children: [
+                Container(
+                  width: 44.r,
+                  height: 44.r,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.5)),
+                    image: const DecorationImage(
+                      image: AssetImage('assets/images/profile.png'),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(width: 12.w),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Ibrahim', style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.w700)),
-                  Row(
-                    children: [
-                      Icon(Icons.diamond_rounded, color: const Color(0xFFFFD700), size: 12.sp),
-                      SizedBox(width: 4.w),
-                      Text('Professional', style: TextStyle(color: const Color(0xFFFFD700), fontSize: 11.sp, fontWeight: FontWeight.w600)),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
+                SizedBox(width: 12.w),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Ibrahim', style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.w700)),
+                    Row(
+                      children: [
+                        Icon(Icons.diamond_rounded, color: const Color(0xFFFFD700), size: 12.sp),
+                        SizedBox(width: 4.w),
+                        Text('Professional', style: TextStyle(color: const Color(0xFFFFD700), fontSize: 11.sp, fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+                     ),
+           ),
           Row(
             children: [
               IconButton(onPressed: () {}, icon: Icon(Icons.search, color: Colors.white54, size: 24.sp)),
