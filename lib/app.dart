@@ -6,7 +6,7 @@ import 'controller/free/home_controller.dart';
 import 'controller/free/markets_controller.dart';
 import 'controller/free/scan_controller.dart';
 import 'controller/subscription_controller.dart';
-import 'presentation/free/dashboard/bottomNavigationBar/bottom_navigation.dart';
+import 'core/routes/app_routes.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -38,7 +38,8 @@ class App extends StatelessWidget {
               fontFamily: 'Inter',
               useMaterial3: true,
             ),
-            home: const BottomNavigation(),
+            initialRoute: AppRoutes.signInRoute,
+            onGenerateRoute: AppRoutes.generateRoute,
           ),
         );
       },
