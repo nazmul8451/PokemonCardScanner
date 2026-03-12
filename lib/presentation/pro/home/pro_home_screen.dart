@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'dart:math' as math;
 
 class ProHomeScreen extends StatefulWidget {
   final VoidCallback? onProfileTap;
@@ -34,6 +35,53 @@ class _ProHomeScreenState extends State<ProHomeScreen> {
     '6M': {'apri': '485,1 €', 'chiudi': '541,3 €', 'alto': '568,8 €', 'basso': '438,6 €', 'modifica': '11,59%', 'points': [0.2, 0.3, 0.4, 0.55, 0.65, 0.7, 0.75]},
     'ALL': {'apri': '30,000.00 €', 'chiudi': '64,650.03 €', 'alto': '70,000.00 €', 'basso': '25,000.00 €', 'modifica': '115.5%', 'points': [0.1, 0.2, 0.4, 0.5, 0.7, 0.8, 1.0]},
   };
+
+  double _parseValue(String val) {
+    String s = val.replaceAll('€', '').trim();
+    if (s.contains(',') && s.contains('.')) {
+      s = s.replaceAll(',', '');
+    } else if (s.contains(',')) {
+      s = s.replaceAll(',', '.');
+    }
+    s = s.replaceAll('%', '').trim();
+    return double.tryParse(s) ?? 0.0;
+  }
+
+  String _formatValue(double val, String original) {
+    bool hasEuroSymbolEnd = original.endsWith('€');
+    bool hasEuroSymbolStart = original.startsWith('€');
+    bool hasSpace = original.contains(' €');
+    
+    String formatted;
+    if (original.contains(',') && original.contains('.')) {
+      formatted = val.toStringAsFixed(2);
+      List<String> parts = formatted.split('.');
+      String intPart = parts[0];
+      bool isNegative = intPart.startsWith('-');
+      if (isNegative) intPart = intPart.substring(1);
+
+      String res = '';
+      for (int i = 0; i < intPart.length; i++) {
+        if (i > 0 && i % 3 == 0) {
+          res = ',' + res;
+        }
+        res = intPart[intPart.length - 1 - i] + res;
+      }
+      if (isNegative) res = '-' + res;
+      formatted = res + '.' + parts[1];
+    } else if (original.contains(',')) {
+      formatted = val.toStringAsFixed(1).replaceAll('.', ',');
+    } else {
+      formatted = val.toStringAsFixed(2);
+    }
+    
+    if (hasEuroSymbolEnd) {
+      return formatted + (hasSpace ? ' €' : '€');
+    } else if (hasEuroSymbolStart) {
+      return '€' + formatted;
+    }
+    return formatted;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -252,80 +300,143 @@ class _ProHomeScreenState extends State<ProHomeScreen> {
   }
 
   Widget _buildChartSection(Color chartColor) {
-    final currentDataMap = _isProfessionalTab ? _chartMockDataPredict : _chartMockDataCore;
-    final currentFilter = _isProfessionalTab ? _selectedTimeFilterPredict : _selectedTimeFilterCore;
-    final currentData = currentDataMap[currentFilter]!;
-    final List<double> chartPoints = currentData['points'];
+    return LayoutBuilder(builder: (context, constraints) {
+      final currentDataMap = _isProfessionalTab ? _chartMockDataPredict : _chartMockDataCore;
+      final currentFilter = _isProfessionalTab ? _selectedTimeFilterPredict : _selectedTimeFilterCore;
+      final currentData = currentDataMap[currentFilter]!;
+      final List<double> chartPoints = currentData['points'];
 
-    return SizedBox(
-      height: 250.h,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned(
-            left: -20.w,
-            right: -20.w, // bleed to edge
-            bottom: 0,
-            top: 20.h,
-            child: GestureDetector(
-              onHorizontalDragUpdate: (details) {
-                _updateScrubPosition(details.localPosition.dx);
-              },
-              onTapDown: (details) {
-                _updateScrubPosition(details.localPosition.dx);
-              },
-              onHorizontalDragEnd: (_) {
-                setState(() {
-                    _scrubX = null;
-                });
-              },
-              onTapUp: (_) {
-                setState(() {
-                    _scrubX = null;
-                });
-              },
-              child: Container(
-                color: Colors.transparent, // Capture gestures across full area
-                child: CustomPaint(
-                  painter: _DashboardChartPainter(
-                    chartColor,
-                    chartPoints,
-                    _isProfessionalTab,
-                    _scrubX,
+      String displayApri = currentData['apri'];
+      String displayChiudi = currentData['chiudi'];
+      String displayAlto = currentData['alto'];
+      String displayBasso = currentData['basso'];
+      String displayModifica = currentData['modifica'];
+
+      if (_scrubX != null && chartPoints.isNotEmpty) {
+        final chartWidth = constraints.maxWidth + 40.w;
+        final stepX = chartWidth / (chartPoints.length - 1);
+        final dotX = _scrubX!.clamp(0.0, chartWidth);
+
+        int segmentIndex = (dotX / stepX).floor();
+        if (segmentIndex < 0) segmentIndex = 0;
+        if (segmentIndex >= chartPoints.length - 1) segmentIndex = chartPoints.length - 2;
+
+        final p0 = chartPoints[segmentIndex];
+        final p1 = chartPoints[segmentIndex + 1];
+
+        double t = (dotX - segmentIndex * stepX) / stepX;
+        t = t.clamp(0.0, 1.0);
+
+        double currentPt;
+        if (_isProfessionalTab) {
+          currentPt = p0 + (p1 - p0) * t;
+        } else {
+          final u = 1 - t;
+          final tt = t * t;
+          final uu = u * u;
+          final uuu = uu * u;
+          final ttt = tt * t;
+          currentPt = (uuu + 3 * uu * t) * p0 + (3 * u * tt + ttt) * p1;
+        }
+
+        double minPt = chartPoints.reduce(math.min);
+        double maxPt = chartPoints.reduce(math.max);
+        double valAlto = _parseValue(displayAlto);
+        double valBasso = _parseValue(displayBasso);
+        double range = valAlto - valBasso;
+        double ptRange = maxPt - minPt;
+
+        double currentPrice;
+        if (ptRange > 0) {
+          double normalizedPt = (currentPt - minPt) / ptRange;
+          currentPrice = valBasso + range * normalizedPt;
+        } else {
+          currentPrice = _parseValue(displayChiudi);
+        }
+
+        displayChiudi = _formatValue(currentPrice, displayChiudi);
+
+        double valApri = _parseValue(displayApri);
+        if (valApri > 0) {
+          double pctChange = ((currentPrice - valApri) / valApri) * 100;
+          String pctStr = pctChange.toStringAsFixed(2);
+          if (displayModifica.contains(',')) {
+            pctStr = pctStr.replaceAll('.', ',');
+          }
+          displayModifica = pctStr + '%';
+        }
+      }
+
+      return SizedBox(
+        height: 250.h,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              left: -20.w,
+              right: -20.w, // bleed to edge
+              bottom: 0,
+              top: 20.h,
+              child: GestureDetector(
+                onHorizontalDragUpdate: (details) {
+                  _updateScrubPosition(details.localPosition.dx);
+                },
+                onTapDown: (details) {
+                  _updateScrubPosition(details.localPosition.dx);
+                },
+                onHorizontalDragEnd: (_) {
+                  setState(() {
+                      _scrubX = null;
+                  });
+                },
+                onTapUp: (_) {
+                  setState(() {
+                      _scrubX = null;
+                  });
+                },
+                child: Container(
+                  color: Colors.transparent, // Capture gestures across full area
+                  child: CustomPaint(
+                    painter: _DashboardChartPainter(
+                      chartColor,
+                      chartPoints,
+                      _isProfessionalTab,
+                      _scrubX,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            left: 0,
-            top: 10.h,
-            child: Container(
-              padding: EdgeInsets.all(20.r),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1C1C1E).withOpacity(0.85),
-                borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildChartRow('Apri:', currentData['apri']),
-                  SizedBox(height: 12.h),
-                  _buildChartRow('Chiudi:', currentData['chiudi']),
-                  SizedBox(height: 12.h),
-                  _buildChartRow('Alto:', currentData['alto']),
-                  SizedBox(height: 12.h),
-                  _buildChartRow('Basso:', currentData['basso']),
-                  SizedBox(height: 12.h),
-                  _buildChartRow('Modifica:', currentData['modifica'], color: chartColor),
-                ],
+            Positioned(
+              left: 0,
+              top: 10.h,
+              child: Container(
+                padding: EdgeInsets.all(20.r),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1C1C1E).withOpacity(0.85),
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildChartRow('Apri:', displayApri),
+                    SizedBox(height: 12.h),
+                    _buildChartRow('Chiudi:', displayChiudi),
+                    SizedBox(height: 12.h),
+                    _buildChartRow('Alto:', displayAlto),
+                    SizedBox(height: 12.h),
+                    _buildChartRow('Basso:', displayBasso),
+                    SizedBox(height: 12.h),
+                    _buildChartRow('Modifica:', displayModifica, color: chartColor),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildChartRow(String label, String value, {Color? color}) {
