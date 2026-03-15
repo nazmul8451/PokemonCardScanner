@@ -10,6 +10,7 @@ class AppPremiumButton extends StatelessWidget {
     this.height,
     this.icon,
     this.fontSize,
+    this.isLoading = false,
   });
 
   final VoidCallback onTap;
@@ -18,11 +19,12 @@ class AppPremiumButton extends StatelessWidget {
   final double? height;
   final Widget? icon;
   final double? fontSize;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: isLoading ? null : onTap,
       child: Container(
         width: width ?? double.infinity,
         height: height ?? 54.h,
@@ -45,22 +47,31 @@ class AppPremiumButton extends StatelessWidget {
           ],
         ),
         child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (icon != null) ...[icon!, SizedBox(width: 10.w)],
-              Text(
-                label,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w900,
-                  fontSize: fontSize ?? 17.sp,
-                  letterSpacing: 0.1,
-                  fontFamily: 'Inter',
+          child: isLoading
+              ? SizedBox(
+                  height: 24.r,
+                  width: 24.r,
+                  child: const CircularProgressIndicator(
+                    color: Colors.black,
+                    strokeWidth: 3,
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (icon != null) ...[icon!, SizedBox(width: 10.w)],
+                    Text(
+                      label,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w900,
+                        fontSize: fontSize ?? 17.sp,
+                        letterSpacing: 0.1,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
         ),
       ),
     );

@@ -41,12 +41,27 @@ class _ProfessionalScreenState extends State<ProfessionalScreen> {
                       SizedBox(height: 32.h),
                       _buildFeaturesList(),
                       SizedBox(height: 40.h),
-                      AppPremiumButton(
-                        onTap: () {
-                          context.read<SubscriptionController>().toggleSubscription();
+                      Consumer<SubscriptionController>(
+                        builder: (context, controller, child) {
+                          return AppPremiumButton(
+                            isLoading: controller.isLoading,
+                            onTap: () async {
+                              await controller.upgradeToPro();
+                              if (controller.isPro && context.mounted) {
+                                Navigator.pop(context);
+                                // You might want to show a success snackbar or navigate elsewhere
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Welcome to Professional!'),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              }
+                            },
+                            label: 'Upgrade to Professional',
+                            height: 60.h,
+                          );
                         },
-                        label: 'Upgrade to Professional',
-                        height: 60.h,
                       ),
                       SizedBox(height: 20.h),
                       TextButton(
