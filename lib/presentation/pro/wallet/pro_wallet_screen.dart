@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../free/dashboard/wallet/card_details_screen.dart';
 
 class ProWalletScreen extends StatefulWidget {
   const ProWalletScreen({super.key});
@@ -55,7 +56,7 @@ class _ProWalletScreenState extends State<ProWalletScreen> {
               SizedBox(height: 40.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: _buildGrid(),
+                child: _buildGrid(context),
               ),
               SizedBox(height: 40.h),
             ],
@@ -70,21 +71,26 @@ class _ProWalletScreenState extends State<ProWalletScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text('\$1,312.07', style: TextStyle(color: Colors.white, fontSize: 36.sp, fontWeight: FontWeight.w900)),
+        Text('\$1,312.07',
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 34.sp,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -1)),
         SizedBox(width: 12.w),
-        Icon(Icons.visibility_outlined, color: Colors.white.withOpacity(0.3), size: 22.sp),
+        Icon(Icons.visibility_outlined,
+            color: Colors.white.withOpacity(0.3), size: 22.sp),
       ],
     );
   }
 
   Widget _buildActionsRow() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildActionItem(Icons.auto_graph_rounded, 'Top Performers'),
-        _buildActionItem(Icons.add, 'Add'),
-        _buildActionItem(Icons.ios_share, 'Share'),
-        _buildActionItem(Icons.send_rounded, 'Export'),
+        Expanded(child: _buildActionItem(Icons.auto_graph_rounded, 'Top Performers')),
+        Expanded(child: _buildActionItem(Icons.add, 'Add')),
+        Expanded(child: _buildActionItem(Icons.ios_share, 'Share')),
+        Expanded(child: _buildActionItem(Icons.send_rounded, 'Export')),
       ],
     );
   }
@@ -181,7 +187,7 @@ class _ProWalletScreenState extends State<ProWalletScreen> {
     );
   }
 
-  Widget _buildGrid() {
+  Widget _buildGrid(BuildContext context) {
     return GridView.count(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -191,21 +197,25 @@ class _ProWalletScreenState extends State<ProWalletScreen> {
       childAspectRatio: 0.48, // Adjusted for taller cards to match mockup
       children: [
         _buildCardItem(
+          context,
           'assets/images/card1.png', 
           'Charizard VMAX', 'Shining Fates: Shiny Vault\nShiny Holo Rare • SV107/SV122',
           'Near Mint', 'Holofoil', '1+', '\$158.96', '\$8.92 (5.95%)', true,
         ),
         _buildCardItem(
+          context,
           'assets/images/card2.png', 
           'Charizard', 'Celebrations: Classic Collection\nClassic Collection • 4/102',
           'Near Mint', 'Holofoil', '1+', '\$144.00', '\$0.79 (0.55%)', true,
         ),
         _buildCardItem(
+          context,
           'assets/images/card3.png', 
           'M Charizard EX', 'Evolutions\nUltra Rare • 13/108',
           'Near Mint', 'Holofoil', '1+', '\$84.50', '\$2.30 (1.20%)', false,
         ),
         _buildCardItem(
+          context,
           'assets/images/card4.png', 
           'Sephiroth - 11-130L (Full Art)', 'Opus XI\nLegend • 11-130L',
           'Near Mint', 'Foil', '1+', '\$45.00', '\$1.15 (2.10%)', true,
@@ -214,70 +224,87 @@ class _ProWalletScreenState extends State<ProWalletScreen> {
     );
   }
 
-  Widget _buildCardItem(String img, String title, String subtitle, String condition, String attribute, String qty, String price, String changeAmt, bool isUp) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF090909), // Very dark card background
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05)), // Subtle border from design
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 5,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(16.r), topRight: Radius.circular(16.r)),
-                image: DecorationImage(image: AssetImage(img), fit: BoxFit.cover),
-              ),
+  Widget _buildCardItem(BuildContext context, String img, String title, String subtitle, String condition, String attribute, String qty, String price, String changeAmt, bool isUp) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CardDetailsScreen(
+              title: title,
+              subtitle: subtitle.split('\n').first,
+              price: price,
+              changeAmt: changeAmt,
+              isUp: isUp,
+              imagePath: img,
             ),
           ),
-          Expanded(
-            flex: 4,
-            child: Padding(
-              padding: EdgeInsets.all(12.r),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: TextStyle(color: Colors.white, fontSize: 14.sp, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
-                  SizedBox(height: 4.h),
-                  Text(subtitle, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 10.sp, height: 1.3), maxLines: 2, overflow: TextOverflow.ellipsis),
-                  SizedBox(height: 8.h),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(condition, style: TextStyle(color: const Color(0xFF00E5FF), fontSize: 11.sp, fontWeight: FontWeight.w700)),
-                      Text(' • $attribute', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.sp)),
-                    ],
-                  ),
-                  const Spacer(),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Qty: $qty', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.sp)),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(price, style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.w900, fontFamily: 'Inter')),
-                          SizedBox(height: 2.h),
-                          Row(
-                            children: [
-                              Icon(isUp ? Icons.arrow_drop_up : Icons.arrow_drop_down, color: isUp ? Colors.greenAccent : Colors.redAccent, size: 14.sp),
-                              Text(changeAmt, style: TextStyle(color: isUp ? Colors.greenAccent : Colors.redAccent, fontSize: 10.sp, fontWeight: FontWeight.w700)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF090909), // Very dark card background
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: Colors.white.withOpacity(0.05)), // Subtle border from design
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(16.r), topRight: Radius.circular(16.r)),
+                  image: DecorationImage(image: AssetImage(img), fit: BoxFit.cover),
+                ),
               ),
             ),
-          ),
-        ],
+            Expanded(
+              flex: 4,
+              child: Padding(
+                padding: EdgeInsets.all(12.r),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: TextStyle(color: Colors.white, fontSize: 14.sp, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    SizedBox(height: 4.h),
+                    Text(subtitle, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 10.sp, height: 1.3), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    SizedBox(height: 8.h),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(condition, style: TextStyle(color: const Color(0xFF00E5FF), fontSize: 11.sp, fontWeight: FontWeight.w700)),
+                        Text(' • $attribute', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.sp)),
+                      ],
+                    ),
+                    const Spacer(),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Qty: $qty', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.sp)),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(price, style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.w900, fontFamily: 'Inter')),
+                            SizedBox(height: 2.h),
+                            Row(
+                              children: [
+                                Icon(isUp ? Icons.arrow_drop_up : Icons.arrow_drop_down, color: isUp ? Colors.greenAccent : Colors.redAccent, size: 14.sp),
+                                Text(changeAmt, style: TextStyle(color: isUp ? Colors.greenAccent : Colors.redAccent, fontSize: 10.sp, fontWeight: FontWeight.w700)),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

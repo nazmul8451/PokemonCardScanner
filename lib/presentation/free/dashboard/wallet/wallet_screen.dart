@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../commonWidgets/common_widgets.dart';
 import '../professional/professional_screen.dart';
+import 'card_details_screen.dart';
 
 class WalletScreen extends StatelessWidget {
   const WalletScreen({super.key});
@@ -30,7 +31,7 @@ class WalletScreen extends StatelessWidget {
                     SizedBox(height: 24.h),
                     _buildSectionHeader(context),
                     SizedBox(height: 16.h),
-                    _buildCardList(),
+                    _buildCardList(context),
                     SizedBox(height: 24.h),
                     _buildProAnalyticsCard(context),
                     SizedBox(height: 24.h),
@@ -291,10 +292,11 @@ class WalletScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCardList() {
+  Widget _buildCardList(BuildContext context) {
     return Column(
       children: [
         _buildCardItem(
+          context: context,
           name: 'Charizard VMAX',
           set: "Champion's Path",
           qty: 2,
@@ -303,6 +305,7 @@ class WalletScreen extends StatelessWidget {
         ),
         SizedBox(height: 12.h),
         _buildCardItem(
+          context: context,
           name: 'Luffy Gear 5',
           set: "OP-05",
           qty: 1,
@@ -314,14 +317,30 @@ class WalletScreen extends StatelessWidget {
   }
 
   Widget _buildCardItem({
+    required BuildContext context,
     required String name,
     required String set,
     required int qty,
     required String price,
     required String change,
   }) {
-    return Container(
-      padding: EdgeInsets.all(16.r),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CardDetailsScreen(
+              title: name,
+              subtitle: set,
+              price: price,
+              changeAmt: change,
+              isUp: change.startsWith('+'),
+            ),
+          ),
+        );
+      },
+      child: Container(
+        padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         color: const Color(0xFF121212),
         borderRadius: BorderRadius.circular(20.r),
@@ -394,7 +413,7 @@ class WalletScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 
   Widget _buildProAnalyticsCard(BuildContext context) {
