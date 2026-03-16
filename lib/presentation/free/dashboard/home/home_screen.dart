@@ -172,7 +172,6 @@ class _DashboardBody extends StatelessWidget {
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
-        SliverToBoxAdapter(child: _AppBar()),
         SliverToBoxAdapter(child: _TabRow()),
         SliverToBoxAdapter(child: _WalletSection(wallet: wallet)),
         SliverToBoxAdapter(
@@ -221,88 +220,6 @@ class _DashboardBody extends StatelessWidget {
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 24)),
       ],
-    );
-  }
-}
-
-// ── App Bar ──────────────────────────────────────────────────────────────────
-
-class _AppBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      child: Row(
-        children: [
-          Container(
-            width: 38.w,
-            height: 38.h,
-            decoration: BoxDecoration(
-              color: AppColors.cardBackground,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.divider),
-            ),
-            child: Center(
-              child: Text(
-                'F',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16.sp,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(width: 10.w),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Dashboard',
-                style: AppTextStyles.titleMedium.copyWith(fontSize: 16.sp),
-              ),
-              Text(
-                'Free Account',
-                style: AppTextStyles.caption.copyWith(fontSize: 11.sp),
-              ),
-            ],
-          ),
-          const Spacer(),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.search_rounded,
-              color: AppColors.textSecondary,
-              size: 24.sp,
-            ),
-          ),
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.notifications_outlined,
-                  color: AppColors.textSecondary,
-                  size: 24.sp,
-                ),
-              ),
-              Positioned(
-                top: 8.h,
-                right: 8.w,
-                child: Container(
-                  width: 8.w,
-                  height: 8.h,
-                  decoration: const BoxDecoration(
-                    color: AppColors.negative,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }
@@ -464,19 +381,102 @@ class _ChartSection extends StatelessWidget {
   final String selectedPeriod;
   final Future<void> Function(String) onPeriodChanged;
 
+  String _formattedDate() {
+    final now = DateTime.now();
+    final d = now.day.toString().padLeft(2, '0');
+    final m = now.month.toString().padLeft(2, '0');
+    final y = now.year;
+    return '$d/$m/$y';
+  }
+
+  double _priceChange() {
+    if (chartData.points.length < 2) return 0.0;
+    final first = chartData.points.first;
+    final last = chartData.points.last;
+    if (first == 0) return 0.0;
+    return ((last - first) / first) * 100;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final change = _priceChange();
+    final changeText =
+        (change >= 0 ? '+' : '') + change.toStringAsFixed(1) + '%';
+    final isPositive = change >= 0;
+
     return Column(
       children: [
         SizedBox(
           height: 140.h,
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 400),
-            child: CustomPaint(
-              key: ValueKey(chartData.period),
-              size: Size(double.infinity, 140.h),
-              painter: _ChartPainter(points: chartData.points),
-            ),
+          child: Stack(
+            children: [
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 400),
+                child: CustomPaint(
+                  key: ValueKey(chartData.period),
+                  size: Size(double.infinity, 140.h),
+                  painter: _ChartPainter(points: chartData.points),
+                ),
+              ),
+              // ── Date + Price Change overlay ──────────────────────────────
+              Positioned(
+                top: 10.h,
+                left: 16.w,
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0B0E11).withOpacity(0.82),
+                    borderRadius: BorderRadius.circular(10.r),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.08),
+                      width: 0.8.w,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _formattedDate(),
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 10.sp,
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(height: 2.h),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Price change ',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 10.sp,
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            TextSpan(
+                              text: changeText,
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 10.sp,
+                                color: isPositive
+                                    ? AppColors.accent
+                                    : AppColors.negative,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         SizedBox(height: 16.h),
@@ -752,6 +752,23 @@ class _ChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (points.isEmpty) return;
 
+    // ── Outer glow (wide, soft) ───────────────────────────────────────────
+    final glowPaintOuter = Paint()
+      ..color = AppColors.accent.withOpacity(0.18)
+      ..strokeWidth = 14
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
+
+    // ── Inner glow (tighter, brighter) ───────────────────────────────────
+    final glowPaintInner = Paint()
+      ..color = AppColors.accent.withOpacity(0.45)
+      ..strokeWidth = 5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
+
+    // ── Crisp top line ───────────────────────────────────────────────────
     final linePaint = Paint()
       ..color = AppColors.accent
       ..strokeWidth = 2.5
@@ -784,7 +801,11 @@ class _ChartPainter extends CustomPainter {
     fillPath.close();
     canvas.drawPath(fillPath, gradientPaint);
 
-    // Line
+    // Glow layers (drawn before the crisp line so line sits on top)
+    canvas.drawPath(path, glowPaintOuter);
+    canvas.drawPath(path, glowPaintInner);
+
+    // Crisp line on top
     canvas.drawPath(path, linePaint);
   }
 

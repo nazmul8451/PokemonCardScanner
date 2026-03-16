@@ -35,20 +35,15 @@ class _SignInScreenState extends State<SignInScreen> {
             children: [
               SizedBox(height: 16.h),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Icon(Icons.arrow_back, color: Colors.white, size: 24.sp),
-                  ),
                   Icon(Icons.diamond_outlined, color: AppColors.primary, size: 28.sp),
-                  SizedBox(width: 24.w), // To balance the back button
                 ],
               ),
               SizedBox(height: 48.h),
               Center(
                 child: Text(
-                  'Log In For Savings',
+                  'Log In',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 24.sp,
@@ -101,14 +96,18 @@ class _SignInScreenState extends State<SignInScreen> {
               AppPremiumButton(
                 label: 'Log In',
                 onTap: () {
-                  Navigator.pushReplacementNamed(context, AppRoutes.dashboardRoute);
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    AppRoutes.dashboardRoute,
+                    (route) => false,
+                  );
                 },
               ),
               SizedBox(height: 24.h),
               Center(
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, AppRoutes.signUpRoute);
+                    Navigator.pushNamed(context, AppRoutes.signUpRoute);
                   },
                   child: RichText(
                     text: TextSpan(

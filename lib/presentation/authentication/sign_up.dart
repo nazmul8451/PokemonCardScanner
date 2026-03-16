@@ -154,14 +154,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
               AppPremiumButton(
                 label: 'Sign Up',
                 onTap: () {
-                  Navigator.pushReplacementNamed(context, AppRoutes.dashboardRoute);
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    AppRoutes.dashboardRoute,
+                    (route) => false,
+                  );
                 },
               ),
               SizedBox(height: 24.h),
               Center(
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, AppRoutes.signInRoute);
+                    Navigator.pop(context); // Go back to Sign In
                   },
                   child: RichText(
                     text: TextSpan(
