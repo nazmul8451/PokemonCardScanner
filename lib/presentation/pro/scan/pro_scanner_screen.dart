@@ -282,7 +282,7 @@ class _ProScannerScreenState extends State<ProScannerScreen> {
                 ),
                 SizedBox(height: 16.h),
                 Text('Current Market Value', style: TextStyle(color: Colors.white, fontSize: 11.sp, fontWeight: FontWeight.w600)),
-                Text('\$589.99', style: TextStyle(color: Colors.white, fontSize: 24.sp, fontWeight: FontWeight.w900, fontFamily: 'Inter')),
+                Text('€589.99', style: TextStyle(color: Colors.white, fontSize: 24.sp, fontWeight: FontWeight.w900, fontFamily: 'Inter')),
               ],
             ),
           ),
@@ -312,17 +312,17 @@ class _ProScannerScreenState extends State<ProScannerScreen> {
             crossAxisSpacing: 12.w,
             childAspectRatio: 2.0,
             children: [
-              _buildPriceCard('Tcgplayer', '\$595'),
-              _buildPriceCard('Ebay', '\$580'),
-              _buildPriceCard('Cardmarket', '\$592.5'),
-              _buildPriceCard('JustTCG', '\$587'),
+              _buildPriceCard('Tcgplayer', '€595'),
+              _buildPriceCard('Ebay', '€580'),
+              _buildPriceCard('Cardmarket', '€592.5'),
+              _buildPriceCard('JustTCG', '€587'),
             ],
           ),
           SizedBox(height: 16.h),
           Row(
             children: [
               Text('Average:  ', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13.sp)),
-              Text('\$589.99', style: TextStyle(color: Colors.white, fontSize: 14.sp, fontWeight: FontWeight.w800, fontFamily: 'Inter')),
+              Text('€589.99', style: TextStyle(color: Colors.white, fontSize: 14.sp, fontWeight: FontWeight.w800, fontFamily: 'Inter')),
             ],
           ),
         ],
@@ -404,23 +404,23 @@ class _ProScannerScreenState extends State<ProScannerScreen> {
       children: [
         Row(
           children: [
-            Expanded(child: _buildPredictionCard('3M', '\$650', '+10.2%', 'Confidence', '92%')),
+            Expanded(child: _buildPredictionCard('3M', '€650', '+10.2%', 'Confidence', '92%')),
             SizedBox(width: 12.w),
-            Expanded(child: _buildPredictionCard('6M', '\$720', '+22.0%', 'Confidence', '89%')),
+            Expanded(child: _buildPredictionCard('6M', '€720', '+22.0%', 'Confidence', '89%')),
           ],
         ),
         SizedBox(height: 12.h),
         Row(
           children: [
-            Expanded(child: _buildPredictionCard('1Y', '\$820', '+39.0%', 'Confidence', '87%')),
+            Expanded(child: _buildPredictionCard('1Y', '€820', '+39.0%', 'Confidence', '87%')),
             SizedBox(width: 12.w),
-            Expanded(child: _buildPredictionCard('3Y', '\$1200', '+103.4%', 'Risk', '78%', isRisk: true)),
+            Expanded(child: _buildPredictionCard('3Y', '€1200', '+103.4%', 'Risk', '78%', isRisk: true)),
           ],
         ),
         SizedBox(height: 12.h),
         Row(
           children: [
-            Expanded(child: _buildPredictionCard('5Y', '\$1650', '+179.7%', 'Confidence', '72%')),
+            Expanded(child: _buildPredictionCard('5Y', '€1650', '+179.7%', 'Confidence', '72%')),
             SizedBox(width: 12.w),
             Expanded(child: const SizedBox.shrink()),
           ],
@@ -566,21 +566,33 @@ class _ProChartPainter extends CustomPainter {
     ];
 
     final path = Path();
-    path.moveTo(points.first.dx, points.first.dy);
-    for (int i = 0; i < points.length; i++) {
-      path.lineTo(points[i].dx, points[i].dy);
-      // Draw grid lines
-      canvas.drawLine(Offset(points[i].dx, 0), Offset(points[i].dx, chartHeight), gridPaint);
+    if (points.isNotEmpty) {
+      path.moveTo(points.first.dx, points.first.dy);
+      
+      for (int i = 0; i < points.length - 1; i++) {
+        final p0 = points[i];
+        final p1 = points[i + 1];
+        
+        // Smooth Trading-style Bezier Curve
+        final cp1 = Offset(p0.dx + (p1.dx - p0.dx) / 2, p0.dy);
+        final cp2 = Offset(p0.dx + (p1.dx - p0.dx) / 2, p1.dy);
+        
+        path.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, p1.dx, p1.dy);
+        
+        // Draw grid lines
+        canvas.drawLine(Offset(points[i].dx, 0), Offset(points[i].dx, chartHeight), gridPaint);
+      }
     }
+    
     canvas.drawPath(path, linePaint);
 
-    // Draw dots
-    for (final point in points) {
-      canvas.drawCircle(point, 4.r, Paint()..color = const Color(0xFFFFCC00));
+    // Draw grid line for the last point
+    if (points.isNotEmpty) {
+       canvas.drawLine(Offset(points.last.dx, 0), Offset(points.last.dy, chartHeight), gridPaint);
     }
 
     // Y-Axis Labels
-    final yLabels = ['\$600', '\$450', '\$300', '\$150', '\$0'];
+    final yLabels = ['€600', '€450', '€300', '€150', '€0'];
     final yStep = chartHeight / 4;
     for (int i = 0; i < yLabels.length; i++) {
       final tp = TextPainter(text: TextSpan(text: yLabels[i], style: textStyle), textDirection: TextDirection.ltr);

@@ -28,25 +28,25 @@ class ProMarketAnalysisScreen extends StatelessWidget {
                       _buildMarketCard(
                         'Pokémon',
                         'assets/images/pokemon_bg.png', // Placeholder
-                        '\$120K',
+                        '€120K',
                         '1,300',
-                        '\$200',
+                        '€200',
                       ),
                       SizedBox(height: 12.h),
                       _buildMarketCard(
                         'One Piece',
                         'assets/images/one_piece_bg.png', // Placeholder
-                        '\$120K',
+                        '€120K',
                         '850',
-                        '\$200',
+                        '€200',
                       ),
                       SizedBox(height: 12.h),
                       _buildMarketCard(
                         'Yu-Gi-Oh!',
                         'assets/images/yugioh_bg.png', // Placeholder
-                        '\$120K',
+                        '€120K',
                         '620',
-                        '\$200',
+                        '€200',
                       ),
                       SizedBox(height: 32.h),
                       _buildSectionHeader('Trending Now', showTimer: false),
@@ -54,7 +54,7 @@ class ProMarketAnalysisScreen extends StatelessWidget {
                       _buildTrendingItem(
                         'Luffy Gear 5',
                         'OP-05',
-                        '\$245.5',
+                        '€245.5',
                         '+67.8%',
                         true,
                       ),
@@ -62,7 +62,7 @@ class ProMarketAnalysisScreen extends StatelessWidget {
                       _buildTrendingItem(
                         'Charizard VMAX',
                         'CP',
-                        '\$589.99',
+                        '€589.99',
                         '-15.2%',
                         false,
                       ),
@@ -339,7 +339,7 @@ class ProMarketAnalysisScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  'VOL: \$125K',
+                  'VOL: €125K',
                   style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 10.sp),
                 ),
               ],

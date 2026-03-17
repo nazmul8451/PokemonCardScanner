@@ -114,8 +114,31 @@ class _ProProfileScreenState extends State<ProProfileScreen> {
                     'Ibrahim',
                     style: TextStyle(color: Colors.white, fontSize: 18.sp, fontWeight: FontWeight.w800),
                   ),
-                  SizedBox(width: 6.w),
-                  Icon(Icons.diamond_outlined, color: const Color(0xFFFFCC00), size: 14.sp),
+                  SizedBox(width: 8.w),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFD700).withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(6.r),
+                      border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.5)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.diamond_outlined, color: const Color(0xFFFFD700), size: 12.sp),
+                        SizedBox(width: 4.w),
+                        Text(
+                          'Professional',
+                          style: TextStyle(
+                            color: const Color(0xFFFFD700),
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
               SizedBox(height: 4.h),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'dart:ui' as ui;
 
 class CardDetailsScreen extends StatefulWidget {
   final String title;
@@ -410,7 +411,7 @@ class _CardDetailsChartPainter extends CustomPainter {
 
     final paint = Paint()
       ..color = chartColor
-      ..strokeWidth = 3.0
+      ..strokeWidth = 3.5
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
       ..style = PaintingStyle.stroke;
@@ -435,10 +436,12 @@ class _CardDetailsChartPainter extends CustomPainter {
       final prevX = (i - 1) * stepX;
       final prevY = size.height - (normalizedPoints[i - 1] * size.height);
 
-      final controlPointX = prevX + (x - prevX) / 2;
+      // High-tension Trading-style Bezier Curve
+      final cp1 = Offset(prevX + (x - prevX) * 0.55, prevY);
+      final cp2 = Offset(prevX + (x - prevX) * 0.45, y);
 
-      path.cubicTo(controlPointX, prevY, controlPointX, y, x, y);
-      fillPath.cubicTo(controlPointX, prevY, controlPointX, y, x, y);
+      path.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, x, y);
+      fillPath.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, x, y);
     }
 
     fillPath.lineTo(size.width, size.height);
@@ -457,7 +460,42 @@ class _CardDetailsChartPainter extends CustomPainter {
 
     canvas.drawPath(fillPath, gradientPaint);
     canvas.drawPath(path, glowOuter);
+    
+    // Draw the path and get last point
+    final ui.PathMetrics pathMetrics = path.computeMetrics();
+    Offset? lastPoint;
+    for (ui.PathMetric pathMetric in pathMetrics) {
+      lastPoint = pathMetric.getTangentForOffset(pathMetric.length)?.position;
+    }
+    
     canvas.drawPath(path, paint);
+
+    // ── Price Label at the end ───────────────────────────────────────────
+    if (lastPoint != null) {
+      final priceStr = currentPrice;
+      
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: priceStr,
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.9),
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w900,
+            fontFamily: 'Inter',
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+
+      double textX = lastPoint.dx + 8.w;
+      double textY = lastPoint.dy - textPainter.height / 2;
+
+      if (textX + textPainter.width > size.width) {
+        textX = lastPoint.dx - textPainter.width - 8.w;
+      }
+
+      textPainter.paint(canvas, Offset(textX, textY));
+    }
 
     if (scrubX != null) {
       double dotX = scrubX!.clamp(0.0, size.width);
@@ -516,7 +554,7 @@ class _CardDetailsChartPainter extends CustomPainter {
       try {
         final double basePrice = double.parse(currentPrice.replaceAll(RegExp(r'[^0-9.]'), ''));
         final double calculatedPrice = basePrice * valMultiplier;
-        displayPrice = '\$${calculatedPrice.toStringAsFixed(2)}';
+        displayPrice = '€${calculatedPrice.toStringAsFixed(2)}';
       } catch (e) {
         // Fallback to static price if parsing fails
       }

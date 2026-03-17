@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 class ProHomeScreen extends StatefulWidget {
   final VoidCallback? onProfileTap;
@@ -11,7 +12,9 @@ class ProHomeScreen extends StatefulWidget {
   State<ProHomeScreen> createState() => _ProHomeScreenState();
 }
 
-class _ProHomeScreenState extends State<ProHomeScreen> {
+class _ProHomeScreenState extends State<ProHomeScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _chartAnimationController;
+  late Animation<double> _chartDrawAnimation;
   bool _isProfessionalTab = true;
   String _selectedTimeFilterCore = '6M';
   String _selectedTimeFilterPredict = '+3Y';
@@ -20,6 +23,26 @@ class _ProHomeScreenState extends State<ProHomeScreen> {
   String? _scrubDate; // Dynamically displayed date when scrubbing
   String? _scrubChange; // Dynamically displayed change when scrubbing
   bool _scrubIsPositive = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _chartAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    _chartDrawAnimation = CurvedAnimation(
+      parent: _chartAnimationController,
+      curve: Curves.easeInOut,
+    );
+    _chartAnimationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _chartAnimationController.dispose();
+    super.dispose();
+  }
 
   // Mock data for the chart based on the selected time filter
   final Map<String, Map<String, dynamic>> _chartMockDataPredict = {
@@ -138,8 +161,6 @@ class _ProHomeScreenState extends State<ProHomeScreen> {
   String _formatValue(double val, String original) {
     bool hasEuroSymbolEnd = original.endsWith('€');
     bool hasEuroSymbolStart = original.startsWith('€');
-    bool hasSpace = original.contains(' €');
-
     String formatted;
     if (original.contains(',') && original.contains('.')) {
       formatted = val.toStringAsFixed(2);
@@ -163,9 +184,7 @@ class _ProHomeScreenState extends State<ProHomeScreen> {
       formatted = val.toStringAsFixed(2);
     }
 
-    if (hasEuroSymbolEnd) {
-      return formatted + (hasSpace ? ' €' : '€');
-    } else if (hasEuroSymbolStart) {
+    if (hasEuroSymbolEnd || hasEuroSymbolStart) {
       return '€' + formatted;
     }
     return formatted;
@@ -661,13 +680,19 @@ class _ProHomeScreenState extends State<ProHomeScreen> {
                   child: Container(
                     color:
                         Colors.transparent, // Capture gestures across full area
-                    child: CustomPaint(
-                      painter: _DashboardChartPainter(
-                        chartColor,
-                        chartPoints,
-                        _isProfessionalTab,
-                        _scrubX,
-                      ),
+                    child: AnimatedBuilder(
+                      animation: _chartDrawAnimation,
+                      builder: (context, child) {
+                        return CustomPaint(
+                          painter: _DashboardChartPainter(
+                            chartColor,
+                            chartPoints,
+                            _isProfessionalTab,
+                            _scrubX,
+                            _chartDrawAnimation.value,
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -1136,38 +1161,23 @@ class _DashboardChartPainter extends CustomPainter {
   final List<double> normalizedPoints;
   final bool isStraightLine;
   final double? scrubX;
+  final double animationValue;
 
   _DashboardChartPainter(
     this.chartColor,
     this.normalizedPoints,
     this.isStraightLine,
     this.scrubX,
+    this.animationValue,
   );
 
   @override
   void paint(Canvas canvas, Size size) {
     if (normalizedPoints.isEmpty) return;
 
-    // ── Glow paints ────────────────────────────────────────────────────────
-    final glowOuter = Paint()
-      ..color = chartColor.withOpacity(0.35) // Increased glow brightness
-      ..strokeWidth = 18 // Increased glow width
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round
-      ..style = PaintingStyle.stroke
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 16); // More blur
-
-    final glowInner = Paint()
-      ..color = chartColor.withOpacity(0.75) // Increased glow brightness
-      ..strokeWidth = 6 // Increased inner glow width
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round
-      ..style = PaintingStyle.stroke
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5);
-
     final paint = Paint()
       ..color = chartColor
-      ..strokeWidth = 2.5
+      ..strokeWidth = 3.5
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
       ..style = PaintingStyle.stroke;
@@ -1195,35 +1205,67 @@ class _DashboardChartPainter extends CustomPainter {
         path.lineTo(x, y);
         fillPath.lineTo(x, y);
       } else {
-        // Smooth Bezier Curve for Dashboard/Core
         final prevX = (i - 1) * stepX;
         final prevY = size.height - (normalizedPoints[i - 1] * size.height);
+        
+        // High-tension Trading-style Bezier Curve
+        final cp1 = Offset(prevX + (x - prevX) * 0.55, prevY);
+        final cp2 = Offset(prevX + (x - prevX) * 0.45, y);
 
-        final controlPointX = prevX + (x - prevX) / 2;
-
-        path.cubicTo(controlPointX, prevY, controlPointX, y, x, y);
-        fillPath.cubicTo(controlPointX, prevY, controlPointX, y, x, y);
+        path.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, x, y);
+        fillPath.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, x, y);
       }
     }
 
-    // Draw Gradient Fill
-    fillPath.lineTo(size.width, size.height);
-    fillPath.close();
+    // Capture the path metrics
+    final ui.PathMetrics pathMetrics = path.computeMetrics();
+    final Path animatedPath = Path();
+    Offset? lastPoint;
+    
+    for (ui.PathMetric pathMetric in pathMetrics) {
+      final double extractLength = pathMetric.length * animationValue;
+      animatedPath.addPath(
+        pathMetric.extractPath(0.0, extractLength),
+        Offset.zero,
+      );
+      
+      if (animationValue > 0) {
+        lastPoint = pathMetric.getTangentForOffset(extractLength)?.position;
+      }
+    }
 
-    final gradientPaint = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [chartColor.withOpacity(0.3), chartColor.withOpacity(0.0)],
-      ).createShader(Rect.fromLTRB(0, 0, size.width, size.height))
-      ..style = PaintingStyle.fill;
+    // Draw animated line
+    canvas.drawPath(animatedPath, paint);
 
-    canvas.drawPath(fillPath, gradientPaint);
+    // ── Price Label at the end ───────────────────────────────────────────
+    if (lastPoint != null && animationValue > 0.1) {
+      final lastPriceValue = normalizedPoints.last * 278.68; // Scaling to match reference
+      final priceStr = lastPriceValue.toStringAsFixed(2);
+      
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: priceStr,
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.9),
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w900,
+            fontFamily: 'Inter',
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
 
-    // Draw glow layers then crisp line on top
-    canvas.drawPath(path, glowOuter);
-    canvas.drawPath(path, glowInner);
-    canvas.drawPath(path, paint);
+      // Position text to the right and slightly above the last point
+      double textX = lastPoint.dx + 8.w;
+      double textY = lastPoint.dy - textPainter.height / 2;
+
+      // Ensure text doesn't go off screen
+      if (textX + textPainter.width > size.width) {
+        textX = lastPoint.dx - textPainter.width - 8.w;
+      }
+
+      textPainter.paint(canvas, Offset(textX, textY));
+    }
 
     // Calculate Dot Position
     double dotX;
@@ -1277,9 +1319,6 @@ class _DashboardChartPainter extends CustomPainter {
     final dotPaint = Paint()
       ..color = chartColor
       ..style = PaintingStyle.fill;
-    final dotShadow = Paint()
-      ..color = chartColor.withOpacity(0.4)
-      ..style = PaintingStyle.fill;
 
     Offset dotPos = Offset(dotX, dotY);
 
@@ -1297,7 +1336,6 @@ class _DashboardChartPainter extends CustomPainter {
     );
 
     // Draw Dot
-    canvas.drawCircle(dotPos, scrubX != null ? 24 : 16, dotShadow);
     canvas.drawCircle(dotPos, 5, dotPaint);
   }
 
@@ -1306,6 +1344,7 @@ class _DashboardChartPainter extends CustomPainter {
     return oldDelegate.chartColor != chartColor ||
         oldDelegate.normalizedPoints != normalizedPoints ||
         oldDelegate.isStraightLine != isStraightLine ||
-        oldDelegate.scrubX != scrubX;
+        oldDelegate.scrubX != scrubX ||
+        oldDelegate.animationValue != animationValue;
   }
 }

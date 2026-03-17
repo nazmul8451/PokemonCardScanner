@@ -42,6 +42,29 @@ class _NavItem {
 
 class _BottomNavigationState extends State<BottomNavigation> {
   int _currentIndex = 0;
+  late SubscriptionController _subscriptionController;
+  
+  @override
+  void initState() {
+    super.initState();
+    _subscriptionController = context.read<SubscriptionController>();
+    _subscriptionController.addListener(_onSubscriptionChanged);
+  }
+
+  @override
+  void dispose() {
+    _subscriptionController.removeListener(_onSubscriptionChanged);
+    super.dispose();
+  }
+
+  void _onSubscriptionChanged() {
+    // If upgraded to Pro, reset to home tab
+    if (_subscriptionController.isPro && _currentIndex != 0) {
+      setState(() {
+        _currentIndex = 0;
+      });
+    }
+  }
 
   // ── Nav items configuration ───────────────────────────────────────────────
   static const List<_NavItem> _items = [

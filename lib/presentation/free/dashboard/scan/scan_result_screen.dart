@@ -286,7 +286,7 @@ class ScanResultScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  '\$589.99',
+                  '€589.99',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 28.sp,

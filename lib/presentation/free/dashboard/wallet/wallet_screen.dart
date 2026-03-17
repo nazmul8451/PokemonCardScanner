@@ -132,7 +132,7 @@ class WalletScreen extends StatelessWidget {
         Expanded(
           child: _buildStatCard(
             label: 'Invested',
-            value: '\$1,080',
+            value: '€1.080',
             icon: Icons.attach_money_rounded,
           ),
         ),
@@ -140,7 +140,7 @@ class WalletScreen extends StatelessWidget {
         Expanded(
           child: _buildStatCard(
             label: 'Value',
-            value: '\$425.48',
+            value: '€425.48',
             icon: Icons.trending_up_rounded,
           ),
         ),
@@ -300,7 +300,7 @@ class WalletScreen extends StatelessWidget {
           name: 'Charizard VMAX',
           set: "Champion's Path",
           qty: 2,
-          price: '\$1,179.98',
+          price: '€1.179,98',
           change: '+31.1%',
         ),
         SizedBox(height: 12.h),
@@ -309,7 +309,7 @@ class WalletScreen extends StatelessWidget {
           name: 'Luffy Gear 5',
           set: "OP-05",
           qty: 1,
-          price: '\$245.5',
+          price: '€245.5',
           change: '+36.4%',
         ),
       ],

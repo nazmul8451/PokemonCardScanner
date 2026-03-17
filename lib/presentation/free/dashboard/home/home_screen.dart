@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'dart:ui' as ui;
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/models/top_performer_model.dart';
@@ -370,7 +371,7 @@ class _WalletSection extends StatelessWidget {
 
 // ── Chart + period ────────────────────────────────────────────────────────────
 
-class _ChartSection extends StatelessWidget {
+class _ChartSection extends StatefulWidget {
   const _ChartSection({
     required this.chartData,
     required this.periods,
@@ -383,6 +384,43 @@ class _ChartSection extends StatelessWidget {
   final String selectedPeriod;
   final Future<void> Function(String) onPeriodChanged;
 
+  @override
+  State<_ChartSection> createState() => _ChartSectionState();
+}
+
+class _ChartSectionState extends State<_ChartSection>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _chartAnimationController;
+  late Animation<double> _chartDrawAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _chartAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    _chartDrawAnimation = CurvedAnimation(
+      parent: _chartAnimationController,
+      curve: Curves.easeInOut,
+    );
+    _chartAnimationController.forward();
+  }
+
+  @override
+  void didUpdateWidget(covariant _ChartSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedPeriod != widget.selectedPeriod) {
+      _chartAnimationController.forward(from: 0.0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _chartAnimationController.dispose();
+    super.dispose();
+  }
+
   String _formattedDate() {
     final now = DateTime.now();
     final d = now.day.toString().padLeft(2, '0');
@@ -392,9 +430,9 @@ class _ChartSection extends StatelessWidget {
   }
 
   double _priceChange() {
-    if (chartData.points.length < 2) return 0.0;
-    final first = chartData.points.first;
-    final last = chartData.points.last;
+    if (widget.chartData.points.length < 2) return 0.0;
+    final first = widget.chartData.points.first;
+    final last = widget.chartData.points.last;
     if (first == 0) return 0.0;
     return ((last - first) / first) * 100;
   }
@@ -414,10 +452,18 @@ class _ChartSection extends StatelessWidget {
             children: [
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 400),
-                child: CustomPaint(
-                  key: ValueKey(chartData.period),
-                  size: Size(double.infinity, 140.h),
-                  painter: _ChartPainter(points: chartData.points),
+                child: AnimatedBuilder(
+                  animation: _chartDrawAnimation,
+                  builder: (context, child) {
+                    return CustomPaint(
+                      key: ValueKey(widget.chartData.period),
+                      size: Size(double.infinity, 140.h),
+                      painter: _ChartPainter(
+                        points: widget.chartData.points,
+                        animationValue: _chartDrawAnimation.value,
+                      ),
+                    );
+                  },
                 ),
               ),
               // ── Date + Price Change overlay ──────────────────────────────
@@ -486,12 +532,12 @@ class _ChartSection extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: periods
+            children: widget.periods
                 .map(
                   (p) => _PeriodButton(
                     label: p,
-                    isActive: p == selectedPeriod,
-                    onTap: () => onPeriodChanged(p),
+                    isActive: p == widget.selectedPeriod,
+                    onTap: () => widget.onPeriodChanged(p),
                   ),
                 )
                 .toList(),
@@ -747,45 +793,21 @@ class _ExploreButton extends StatelessWidget {
 // ── Chart Painter ─────────────────────────────────────────────────────────────
 
 class _ChartPainter extends CustomPainter {
-  const _ChartPainter({required this.points});
+  const _ChartPainter({required this.points, required this.animationValue});
   final List<double> points;
+  final double animationValue;
 
   @override
   void paint(Canvas canvas, Size size) {
     if (points.isEmpty) return;
 
-    // ── Outer glow (wide, soft) ───────────────────────────────────────────
-    final glowPaintOuter = Paint()
-      ..color = AppColors.accent.withOpacity(0.18)
-      ..strokeWidth = 14
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
-
-    // ── Inner glow (tighter, brighter) ───────────────────────────────────
-    final glowPaintInner = Paint()
-      ..color = AppColors.accent.withOpacity(0.45)
-      ..strokeWidth = 5
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
-
     // ── Crisp top line ───────────────────────────────────────────────────
     final linePaint = Paint()
       ..color = AppColors.accent
-      ..strokeWidth = 2.5
+      ..strokeWidth = 3.5 // Thicker for premium look
       ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final gradientPaint = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          AppColors.accent.withOpacity(0.35),
-          AppColors.accent.withOpacity(0.0),
-        ],
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
 
     // Convert normalised points to canvas coordinates
     final step = size.width / (points.length - 1);
@@ -796,33 +818,76 @@ class _ChartPainter extends CustomPainter {
 
     final path = _buildCurvedPath(offsets);
 
-    // Gradient fill
-    final fillPath = Path()..addPath(path, Offset.zero);
-    fillPath.lineTo(size.width, size.height);
-    fillPath.lineTo(0, size.height);
-    fillPath.close();
-    canvas.drawPath(fillPath, gradientPaint);
+    final ui.PathMetrics pathMetrics = path.computeMetrics();
+    final Path animatedPath = Path();
+    Offset? lastPoint;
+    
+    for (ui.PathMetric pathMetric in pathMetrics) {
+      final double extractLength = pathMetric.length * animationValue;
+      animatedPath.addPath(
+        pathMetric.extractPath(0.0, extractLength),
+        Offset.zero,
+      );
+      
+      if (animationValue > 0) {
+        lastPoint = pathMetric.getTangentForOffset(extractLength)?.position;
+      }
+    }
 
-    // Glow layers (drawn before the crisp line so line sits on top)
-    canvas.drawPath(path, glowPaintOuter);
-    canvas.drawPath(path, glowPaintInner);
+    // Crisp line
+    canvas.drawPath(animatedPath, linePaint);
 
-    // Crisp line on top
-    canvas.drawPath(path, linePaint);
+    // ── Price Label at the end ───────────────────────────────────────────
+    if (lastPoint != null && animationValue > 0.1) {
+      final lastPriceValue = points.last * 1000; // Mock price scaling
+      final priceStr = lastPriceValue.toStringAsFixed(2);
+      
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: priceStr,
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.9),
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w900,
+            fontFamily: 'Inter',
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+
+      // Position text to the right and slightly above the last point
+      double textX = lastPoint.dx + 8.w;
+      double textY = lastPoint.dy - textPainter.height / 2;
+
+      // Ensure text doesn't go off screen
+      if (textX + textPainter.width > size.width) {
+        textX = lastPoint.dx - textPainter.width - 8.w;
+      }
+
+      textPainter.paint(canvas, Offset(textX, textY));
+    }
   }
 
   Path _buildCurvedPath(List<Offset> pts) {
+    if (pts.isEmpty) return Path();
     final path = Path()..moveTo(pts.first.dx, pts.first.dy);
+    
     for (int i = 0; i < pts.length - 1; i++) {
       final p0 = pts[i];
       final p1 = pts[i + 1];
-      final mid = Offset((p0.dx + p1.dx) / 2, (p0.dy + p1.dy) / 2);
-      path.quadraticBezierTo(p0.dx, p0.dy, mid.dx, mid.dy);
+      
+      // Increased "tension" by moving control points further horizontally 
+      // but keeping them at the same Y as the anchor points for that wavy feel
+      final cp1 = Offset(p0.dx + (p1.dx - p0.dx) * 0.55, p0.dy);
+      final cp2 = Offset(p0.dx + (p1.dx - p0.dx) * 0.45, p1.dy);
+      
+      path.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, p1.dx, p1.dy);
     }
-    path.lineTo(pts.last.dx, pts.last.dy);
     return path;
   }
 
   @override
-  bool shouldRepaint(_ChartPainter old) => old.points != points;
+  bool shouldRepaint(_ChartPainter old) {
+    return old.points != points || old.animationValue != animationValue;
+  }
 }

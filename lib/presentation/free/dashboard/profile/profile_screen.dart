@@ -240,7 +240,7 @@ class ProfileScreen extends StatelessWidget {
                     textBaseline: TextBaseline.alphabetic,
                     children: [
                       Text(
-                        '\$9.99',
+                        '€9.99',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 24.sp,

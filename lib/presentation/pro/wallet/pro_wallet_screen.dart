@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'dart:ui' as ui;
 import '../../free/dashboard/wallet/card_details_screen.dart';
 
 class ProWalletScreen extends StatefulWidget {
@@ -71,7 +72,7 @@ class _ProWalletScreenState extends State<ProWalletScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text('\$1,312.07',
+        Text('€1,312.07',
             style: TextStyle(
                 color: Colors.white,
                 fontSize: 34.sp,
@@ -200,25 +201,25 @@ class _ProWalletScreenState extends State<ProWalletScreen> {
           context,
           'assets/images/card1.png', 
           'Charizard VMAX', 'Shining Fates: Shiny Vault\nShiny Holo Rare • SV107/SV122',
-          'Near Mint', 'Holofoil', '1+', '\$158.96', '\$8.92 (5.95%)', true,
+          'Near Mint', 'Holofoil', '1+', '€158.96', '€8.92 (5.95%)', true,
         ),
         _buildCardItem(
           context,
           'assets/images/card2.png', 
           'Charizard', 'Celebrations: Classic Collection\nClassic Collection • 4/102',
-          'Near Mint', 'Holofoil', '1+', '\$144.00', '\$0.79 (0.55%)', true,
+          'Near Mint', 'Holofoil', '1+', '€144.00', '€0.79 (0.55%)', true,
         ),
         _buildCardItem(
           context,
           'assets/images/card3.png', 
           'M Charizard EX', 'Evolutions\nUltra Rare • 13/108',
-          'Near Mint', 'Holofoil', '1+', '\$84.50', '\$2.30 (1.20%)', false,
+          'Near Mint', 'Holofoil', '1+', '€84.50', '€2.30 (1.20%)', false,
         ),
         _buildCardItem(
           context,
           'assets/images/card4.png', 
           'Sephiroth - 11-130L (Full Art)', 'Opus XI\nLegend • 11-130L',
-          'Near Mint', 'Foil', '1+', '\$45.00', '\$1.15 (2.10%)', true,
+          'Near Mint', 'Foil', '1+', '€45.00', '€1.15 (2.10%)', true,
         ),
       ],
     );
@@ -323,7 +324,7 @@ class _WalletChartPainter extends CustomPainter {
 
     final paint = Paint()
       ..color = chartColor
-      ..strokeWidth = 2.5
+      ..strokeWidth = 3.5
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
       ..style = PaintingStyle.stroke;
@@ -348,10 +349,12 @@ class _WalletChartPainter extends CustomPainter {
         final prevX = (i - 1) * stepX;
         final prevY = size.height - (normalizedPoints[i - 1] * size.height);
         
-        final controlPointX = prevX + (x - prevX) / 2;
+        // High-tension Trading-style Bezier Curve
+        final cp1 = Offset(prevX + (x - prevX) * 0.55, prevY);
+        final cp2 = Offset(prevX + (x - prevX) * 0.45, y);
         
-        path.cubicTo(controlPointX, prevY, controlPointX, y, x, y);
-        fillPath.cubicTo(controlPointX, prevY, controlPointX, y, x, y);
+        path.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, x, y);
+        fillPath.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, x, y);
     }
     
     fillPath.lineTo(size.width, size.height);
@@ -369,7 +372,52 @@ class _WalletChartPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
       
     canvas.drawPath(fillPath, gradientPaint);
-    canvas.drawPath(path, paint);
+    // Draw the path
+    final ui.PathMetrics pathMetrics = path.computeMetrics();
+    final Path animatedPath = Path();
+    Offset? lastPoint;
+    
+    // We need an animationValue here too for consistency, but if not provided, we draw fully
+    const double animVal = 1.0; 
+    
+    for (ui.PathMetric pathMetric in pathMetrics) {
+      final double extractLength = pathMetric.length * animVal;
+      animatedPath.addPath(
+        pathMetric.extractPath(0.0, extractLength),
+        Offset.zero,
+      );
+      lastPoint = pathMetric.getTangentForOffset(extractLength)?.position;
+    }
+
+    canvas.drawPath(animatedPath, paint);
+
+    // ── Price Label at the end ───────────────────────────────────────────
+    if (lastPoint != null) {
+      final lastPriceValue = normalizedPoints.last * 1312.07; // Wallet scale
+      final priceStr = lastPriceValue.toStringAsFixed(2);
+      
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: priceStr,
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.9),
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w900,
+            fontFamily: 'Inter',
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+
+      double textX = lastPoint.dx + 8.w;
+      double textY = lastPoint.dy - textPainter.height / 2;
+
+      if (textX + textPainter.width > size.width) {
+        textX = lastPoint.dx - textPainter.width - 8.w;
+      }
+
+      textPainter.paint(canvas, Offset(textX, textY));
+    }
 
     double dotX;
     double dotY;
