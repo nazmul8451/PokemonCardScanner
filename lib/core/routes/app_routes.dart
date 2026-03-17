@@ -32,7 +32,7 @@ class AppRoutes {
         return MaterialPageRoute(
           builder: (_) => Scaffold(
             body: Center(
-              child: Text('No route defined for ${settings.name}'),
+              child: Text('No route d   efined for ${settings.name}'),
             ),
           ),
         );
