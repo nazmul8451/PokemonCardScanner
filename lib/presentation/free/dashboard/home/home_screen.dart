@@ -264,37 +264,39 @@ class _Tab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              label,
-              style: isActive
-                  ? AppTextStyles.bodyMedium.copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14.sp,
-                    )
-                  : AppTextStyles.bodySmall.copyWith(fontSize: 12.sp),
-            ),
-            if (hasBadge) ...[
-              SizedBox(width: 4.w),
-              Icon(Icons.bolt_rounded, size: 14.sp, color: AppColors.primary),
+    return IntrinsicWidth(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: isActive
+                    ? AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14.sp,
+                      )
+                    : AppTextStyles.bodySmall.copyWith(fontSize: 12.sp),
+              ),
+              if (hasBadge) ...[
+                SizedBox(width: 4.w),
+                Icon(Icons.bolt_rounded, size: 14.sp, color: AppColors.primary),
+              ],
             ],
-          ],
-        ),
-        if (isActive)
-          Container(
-            margin: EdgeInsets.only(top: 4.h),
-            height: 2.h,
-            width: 72.w,
-            decoration: BoxDecoration(
-              color: AppColors.accent,
-              borderRadius: BorderRadius.circular(2.r),
-            ),
           ),
-      ],
+          if (isActive)
+            Container(
+              margin: EdgeInsets.only(top: 4.h),
+              height: 2.h,
+              decoration: BoxDecoration(
+                color: AppColors.accent,
+                borderRadius: BorderRadius.circular(2.r),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

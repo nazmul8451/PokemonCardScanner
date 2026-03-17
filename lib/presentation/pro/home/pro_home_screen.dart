@@ -245,117 +245,158 @@ class _ProHomeScreenState extends State<ProHomeScreen> {
   Widget _buildTabs(Color activeColor) {
     return Column(
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _isProfessionalTab = false;
-                  _scrubX = null; // Reset selection
-                });
-              },
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 12.h, right: 16.w),
-                child: Text(
-                  'Dashboard',
-                  style: TextStyle(
-                    color: !_isProfessionalTab
-                        ? Colors.white
-                        : Colors.white.withOpacity(0.4),
-                    fontSize: 18.sp,
-                    fontWeight: !_isProfessionalTab
-                        ? FontWeight.w800
-                        : FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _isProfessionalTab = true;
-                  _scrubX = null; // Reset selection
-                });
-              },
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 12.h, left: 16.w),
-                child: Row(
-                  children: [
-                    Text(
-                      'Professional',
-                      style: TextStyle(
-                        color: _isProfessionalTab
-                            ? Colors.white
-                            : Colors.white.withOpacity(0.4),
-                        fontSize: 18.sp,
-                        fontWeight: _isProfessionalTab
-                            ? FontWeight.w800
-                            : FontWeight.w600,
-                        shadows: _isProfessionalTab
-                            ? [
-                                Shadow(
-                                  color: Colors.white.withOpacity(0.6),
-                                  blurRadius: 10,
-                                ),
-                              ]
-                            : null,
-                      ),
-                    ),
-                    SizedBox(width: 4.w),
-                    Icon(
-                      Icons.diamond_rounded,
-                      color: const Color(0xFFFFD700),
-                      size: 14.sp,
-                      shadows: _isProfessionalTab
-                          ? [
-                              Shadow(
-                                color: const Color(0xFFFFD700).withOpacity(0.8),
-                                blurRadius: 10,
-                              ),
-                            ]
-                          : null,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const Spacer(),
-            if (!_isProfessionalTab) ...[
-              Padding(
-                padding: EdgeInsets.only(bottom: 12.h),
-                child: Icon(Icons.search, color: Colors.white54, size: 20.sp),
-              ),
-            ],
-          ],
-        ),
         Stack(
           children: [
-            // Background line
-            Container(
-              width: double.infinity,
-              height: 1.h,
-              color: Colors.white.withOpacity(0.1),
-            ),
-            // Active indicator
-            AnimatedPositioned(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeInOut,
-              left: _isProfessionalTab ? 115.w : 0,
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
               child: Container(
-                width: 100.w,
-                height: 2.h,
-                decoration: BoxDecoration(
-                  color: activeColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: activeColor.withOpacity(0.8),
-                      blurRadius: 10,
-                      offset: const Offset(0, -1),
-                    ),
-                  ],
-                ),
+                width: double.infinity,
+                height: 1.h,
+                color: Colors.white.withOpacity(0.1),
               ),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isProfessionalTab = false;
+                      _scrubX = null; // Reset selection
+                    });
+                  },
+                  child: Container(
+                    color: Colors.transparent,
+                    child: IntrinsicWidth(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 12.h),
+                            child: Text(
+                              'Dashboard',
+                              style: TextStyle(
+                                color: !_isProfessionalTab
+                                    ? Colors.white
+                                    : Colors.white.withOpacity(0.4),
+                                fontSize: 18.sp,
+                                fontWeight: !_isProfessionalTab
+                                    ? FontWeight.w800
+                                    : FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            height: 2.h,
+                            decoration: BoxDecoration(
+                              color: !_isProfessionalTab
+                                  ? activeColor
+                                  : Colors.transparent,
+                              boxShadow: !_isProfessionalTab
+                                  ? [
+                                      BoxShadow(
+                                        color: activeColor.withOpacity(0.8),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, -1),
+                                      ),
+                                    ]
+                                  : [],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 32.w),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isProfessionalTab = true;
+                      _scrubX = null; // Reset selection
+                    });
+                  },
+                  child: Container(
+                    color: Colors.transparent,
+                    child: IntrinsicWidth(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 12.h),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Professional',
+                                  style: TextStyle(
+                                    color: _isProfessionalTab
+                                        ? Colors.white
+                                        : Colors.white.withOpacity(0.4),
+                                    fontSize: 18.sp,
+                                    fontWeight: _isProfessionalTab
+                                        ? FontWeight.w800
+                                        : FontWeight.w600,
+                                    shadows: _isProfessionalTab
+                                        ? [
+                                            Shadow(
+                                              color: Colors.white.withOpacity(0.6),
+                                              blurRadius: 10,
+                                            ),
+                                          ]
+                                        : null,
+                                  ),
+                                ),
+                                SizedBox(width: 4.w),
+                                Icon(
+                                  Icons.diamond_rounded,
+                                  color: const Color(0xFFFFD700),
+                                  size: 14.sp,
+                                  shadows: _isProfessionalTab
+                                      ? [
+                                          Shadow(
+                                            color: const Color(0xFFFFD700)
+                                                .withOpacity(0.8),
+                                            blurRadius: 10,
+                                          ),
+                                        ]
+                                      : null,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: 2.h,
+                            decoration: BoxDecoration(
+                              color: _isProfessionalTab
+                                  ? activeColor
+                                  : Colors.transparent,
+                              boxShadow: _isProfessionalTab
+                                  ? [
+                                      BoxShadow(
+                                        color: activeColor.withOpacity(0.8),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, -1),
+                                      ),
+                                    ]
+                                  : [],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                if (!_isProfessionalTab) ...[
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 14.h),
+                    child: Icon(Icons.search, color: Colors.white54, size: 20.sp),
+                  ),
+                ],
+              ],
             ),
           ],
         ),

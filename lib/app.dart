@@ -38,7 +38,7 @@ class App extends StatelessWidget {
               fontFamily: 'Inter',
               useMaterial3: true,
             ),
-            initialRoute: AppRoutes.signInRoute,
+            initialRoute: AppRoutes.splashRoute,
             onGenerateRoute: AppRoutes.generateRoute,
           ),
         );

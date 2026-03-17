@@ -5,6 +5,7 @@ import '../../presentation/authentication/reset_pass.dart';
 import '../../presentation/authentication/otp.dart';
 import '../../presentation/authentication/set_pass.dart';
 import '../../presentation/free/dashboard/bottomNavigationBar/bottom_navigation.dart';
+import '../../presentation/splash/splash_screen.dart';
 
 class AppRoutes {
   static const String signInRoute = '/signIn';
@@ -13,9 +14,12 @@ class AppRoutes {
   static const String otpRoute = '/otp';
   static const String setPasswordRoute = '/setPassword';
   static const String dashboardRoute = '/dashboard';
+  static const String splashRoute = '/splash';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case splashRoute:
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
       case signInRoute:
         return MaterialPageRoute(builder: (_) => const SignInScreen());
       case signUpRoute:
@@ -32,7 +36,7 @@ class AppRoutes {
         return MaterialPageRoute(
           builder: (_) => Scaffold(
             body: Center(
-              child: Text('No route d   efined for ${settings.name}'),
+              child: Text('No route defined for ${settings.name}'),
             ),
           ),
         );
