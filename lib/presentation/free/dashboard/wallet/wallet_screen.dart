@@ -53,73 +53,63 @@ class WalletScreen extends StatelessWidget {
           bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 1.w),
         ),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            radius: 22.r,
-            backgroundColor: const Color(0xFF2A2D3E),
-            child: Text(
-              'F',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Wallet',
-                  style: AppTextStyles.titleMedium.copyWith(
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 22.r,
+                backgroundColor: const Color(0xFF2A2D3E),
+                child: Text(
+                  'F',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.8),
                     fontSize: 18.sp,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                Text(
-                  'Free Account',
-                  style: AppTextStyles.caption.copyWith(
-                    fontSize: 12.sp,
-                    color: AppColors.textSecondary,
+              ),
+              SizedBox(width: 12.w),
+              Text(
+                'Wallet',
+                style: AppTextStyles.titleMedium.copyWith(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12.h),
+          Container(
+            height: 44.h,
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            decoration: BoxDecoration(
+              color: const Color(0xFF121212),
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: Colors.white.withOpacity(0.08)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.search, color: Colors.white38, size: 20.sp),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: TextField(
+                    style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                    decoration: InputDecoration(
+                      hintText: 'Search cards...',
+                      hintStyle: TextStyle(
+                        color: Colors.white30,
+                        fontSize: 14.sp,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.search_rounded,
-              color: Colors.white.withOpacity(0.8),
-              size: 24.sp,
-            ),
-          ),
-          Stack(
-            children: [
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.notifications_none_rounded,
-                  color: Colors.white.withOpacity(0.8),
-                  size: 24.sp,
-                ),
-              ),
-              Positioned(
-                right: 12.w,
-                top: 12.h,
-                child: Container(
-                  width: 8.r,
-                  height: 8.r,
-                  decoration: const BoxDecoration(
-                    color: Colors.redAccent,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ),
@@ -134,14 +124,6 @@ class WalletScreen extends StatelessWidget {
             label: 'Invested',
             value: '€1.080',
             icon: Icons.attach_money_rounded,
-          ),
-        ),
-        SizedBox(width: 12.w),
-        Expanded(
-          child: _buildStatCard(
-            label: 'Value',
-            value: '€425.48',
-            icon: Icons.trending_up_rounded,
           ),
         ),
         SizedBox(width: 12.w),
@@ -341,79 +323,80 @@ class WalletScreen extends StatelessWidget {
       },
       child: Container(
         padding: EdgeInsets.all(16.r),
-      decoration: BoxDecoration(
-        color: const Color(0xFF121212),
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05), width: 1.w),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48.w,
-            height: 64.h,
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E1E1E),
-              borderRadius: BorderRadius.circular(8.r),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.1),
-                width: 1.w,
+        decoration: BoxDecoration(
+          color: const Color(0xFF121212),
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(color: Colors.white.withOpacity(0.05), width: 1.w),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48.w,
+              height: 64.h,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E1E1E),
+                borderRadius: BorderRadius.circular(8.r),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.1),
+                  width: 1.w,
+                ),
+              ),
+              child: Icon(
+                Icons.image_outlined,
+                color: Colors.white.withOpacity(0.2),
+                size: 20.sp,
               ),
             ),
-            child: Icon(
-              Icons.image_outlined,
-              color: Colors.white.withOpacity(0.2),
-              size: 20.sp,
+            SizedBox(width: 16.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    '$set • Qty: $qty',
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 13.sp,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          SizedBox(width: 16.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  name,
+                  price,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 16.sp,
+                    fontSize: 17.sp,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                SizedBox(height: 4.h),
+                SizedBox(height: 2.h),
                 Text(
-                  '$set • Qty: $qty',
+                  change,
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: const Color(0xFFFFD700),
                     fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                price,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 17.sp,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              SizedBox(height: 2.h),
-              Text(
-                change,
-                style: TextStyle(
-                  color: const Color(0xFFFFD700),
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
-    ));
+    );
   }
 
   Widget _buildProAnalyticsCard(BuildContext context) {

@@ -1,43 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_text_styles.dart';
-import '../../../commonWidgets/common_widgets.dart';
 import '../professional/professional_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  bool _isSettingsTab = true;
+  int _selectedAppIconIndex = 0;
+
+  void _navigateToPro() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ProfessionalScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFF0B0E11),
       body: SafeArea(
         child: Column(
           children: [
-            _buildAppBar(context),
+            _buildAppBar(),
+            SizedBox(height: 16.h),
+            _buildProfileHeader(),
+            SizedBox(height: 24.h),
+            _buildTabs(),
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 16.h),
-                    _buildAccountStatusCard(),
-                    SizedBox(height: 16.h),
-                    _buildUpgradeProCard(context),
-                    SizedBox(height: 24.h),
-                    _buildLanguageSection(),
-                    SizedBox(height: 24.h),
-                    _buildAppearanceSection(),
-                    SizedBox(height: 24.h),
-                    _buildOtherSettingsSection(),
-                    SizedBox(height: 24.h),
-                    _buildLogOutButton(),
-                    SizedBox(height: 32.h),
-                  ],
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
+                child: _isSettingsTab ? _buildSettingsTab() : _buildFollowUsTab(),
               ),
             ),
           ],
@@ -46,7 +45,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
+  Widget _buildAppBar() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
       decoration: BoxDecoration(
@@ -54,134 +53,125 @@ class ProfileScreen extends StatelessWidget {
           bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 1.w),
         ),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            radius: 22.r,
-            backgroundColor: const Color(0xFF2A2D3E),
-            child: Text(
-              'F',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
-              ),
+          Text(
+            'Profile',
+            style: TextStyle(
+              fontSize: 22.sp,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
             ),
           ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          SizedBox(height: 12.h),
+          Container(
+            height: 44.h,
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            decoration: BoxDecoration(
+              color: const Color(0xFF141414),
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: Colors.white.withOpacity(0.08)),
+            ),
+            child: Row(
               children: [
-                Text(
-                  'Settings',
-                  style: AppTextStyles.titleMedium.copyWith(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Text(
-                  'Free Account',
-                  style: AppTextStyles.caption.copyWith(
-                    fontSize: 12.sp,
-                    color: AppColors.textSecondary,
+                Icon(Icons.search, color: Colors.white38, size: 20.sp),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: TextField(
+                    style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                    decoration: InputDecoration(
+                      hintText: 'Search settings...',
+                      hintStyle: TextStyle(
+                        color: Colors.white30,
+                        fontSize: 14.sp,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.search_rounded,
-              color: Colors.white.withOpacity(0.8),
-              size: 24.sp,
-            ),
-          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileHeader() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: Row(
+        children: [
           Stack(
             children: [
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.notifications_none_rounded,
-                  color: Colors.white.withOpacity(0.8),
-                  size: 24.sp,
+              Container(
+                width: 64.r,
+                height: 64.r,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white.withOpacity(0.1), width: 2),
+                ),
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/images/profile.png',
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        Icon(Icons.person, color: Colors.white24, size: 30.sp),
+                  ),
                 ),
               ),
               Positioned(
-                right: 12.w,
-                top: 12.h,
+                bottom: 0,
+                right: 0,
                 child: Container(
-                  width: 8.r,
-                  height: 8.r,
+                  padding: EdgeInsets.all(4.r),
                   decoration: const BoxDecoration(
-                    color: Colors.redAccent,
+                    color: Colors.white24,
                     shape: BoxShape.circle,
                   ),
+                  child: Icon(Icons.camera_alt, color: Colors.white, size: 10.sp),
                 ),
               ),
             ],
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAccountStatusCard() {
-    return Container(
-      padding: EdgeInsets.all(20.r),
-      decoration: BoxDecoration(
-        color: const Color(0xFF121212),
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05), width: 1.w),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Account Status',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(height: 16.h),
-          Row(
+          SizedBox(width: 16.w),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: EdgeInsets.all(12.r),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.star_outline_rounded,
-                  color: Colors.white.withOpacity(0.5),
-                  size: 24.sp,
-                ),
-              ),
-              SizedBox(width: 16.w),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: [
                   Text(
-                    'Free Member',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    'Ibrahim',
+                    style: TextStyle(color: Colors.white, fontSize: 18.sp, fontWeight: FontWeight.w800),
                   ),
-                  Text(
-                    'Limited features',
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 14.sp,
+                  SizedBox(width: 8.w),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(6.r),
+                      border: Border.all(color: Colors.white.withOpacity(0.1)),
+                    ),
+                    child: Text(
+                      'FREE MEMBER',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.5),
+                        fontSize: 9.sp,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ),
                 ],
               ),
+              SizedBox(height: 4.h),
+              Text(
+                'alex.rivera@predictcg.com',
+                style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13.sp),
+              ),
             ],
           ),
         ],
@@ -189,345 +179,371 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildUpgradeProCard(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(24.r),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A170F),
-        borderRadius: BorderRadius.circular(24.r),
-        border: Border.all(
-          color: const Color(0xFFFFCC00).withOpacity(0.2),
-          width: 1.w,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 48.w,
-                height: 48.w,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Icon(
-                  Icons.diamond_outlined,
-                  color: Colors.black,
-                  size: 28.sp,
-                ),
-              ),
-              SizedBox(width: 16.w),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Upgrade to Pro',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Text(
-                        '€9.99',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24.sp,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      Text(
-                        '/mo',
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 14.sp,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(height: 24.h),
-          Text(
-            'Unlock all premium features',
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(height: 16.h),
-          _buildFeatureItem('Unlimited card scans'),
-          _buildFeatureItem('Advanced forecasts (5 years)'),
-          _buildFeatureItem('Personalized alerts'),
-          _buildFeatureItem('Detailed analytics'),
-          _buildFeatureItem('Blue checkmark verification'),
-          _buildFeatureItem('Priority support'),
-          _buildFeatureItem('Export reports'),
-          _buildFeatureItem('API access'),
-          SizedBox(height: 24.h),
-          AppPremiumButton(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ProfessionalScreen(),
-                ),
-              );
-            },
-            label: 'Upgrade Now',
-            height: 52.h,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFeatureItem(String text) {
+  Widget _buildTabs() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 10.h),
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: Row(
         children: [
-          Icon(
-            Icons.check_rounded,
-            color: const Color(0xFFFFD700),
-            size: 16.sp,
+          Expanded(
+            child: GestureDetector(
+              onTap: () => setState(() => _isSettingsTab = true),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: _isSettingsTab ? const Color(0xFFFFD700) : Colors.transparent,
+                      width: 2.w,
+                    ),
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    'SETTINGS',
+                    style: TextStyle(
+                      color: _isSettingsTab ? Colors.white : Colors.white.withOpacity(0.4),
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
-          SizedBox(width: 12.w),
-          Text(
-            text,
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 14.sp),
+          Expanded(
+            child: GestureDetector(
+              onTap: () => setState(() => _isSettingsTab = false),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: !_isSettingsTab ? const Color(0xFFFFD700) : Colors.transparent,
+                      width: 2.w,
+                    ),
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    'FOLLOW US',
+                    style: TextStyle(
+                      color: !_isSettingsTab ? const Color(0xFFFFD700) : Colors.white.withOpacity(0.4),
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildLanguageSection() {
+  Widget _buildSettingsTab() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Icon(
-              Icons.public_rounded,
-              color: const Color(0xFFFFD700),
-              size: 18.sp,
-            ),
-            SizedBox(width: 12.w),
-            Text(
-              'Language',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 16.h),
+        _buildListTile('Language', trailingText: 'English'),
+        SizedBox(height: 24.h),
+        _buildSectionHeader('WALLET SHARING'),
+        SizedBox(height: 12.h),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          padding: EdgeInsets.all(12.r),
           decoration: BoxDecoration(
-            color: const Color(0xFF15181D),
+            color: const Color(0xFF141414),
             borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'English',
-                style: TextStyle(color: Colors.white, fontSize: 15.sp),
+              Icon(Icons.link, color: Colors.white.withOpacity(0.3), size: 16.sp),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: Text(
+                  'predictcg.com/w/ale...',
+                  style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13.sp),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              Icon(
-                Icons.keyboard_arrow_down_rounded,
-                color: Colors.white70,
-                size: 24.sp,
+              GestureDetector(
+                onTap: _navigateToPro,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFCC00),
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Text(
+                    'Generate Link',
+                    style: TextStyle(color: Colors.black, fontSize: 12.sp, fontWeight: FontWeight.w800),
+                  ),
+                ),
               ),
             ],
           ),
         ),
+        SizedBox(height: 24.h),
+        GestureDetector(
+          onTap: _navigateToPro,
+          child: Container(
+            padding: EdgeInsets.all(16.r),
+            decoration: BoxDecoration(
+              color: const Color(0xFF141414),
+              borderRadius: BorderRadius.circular(16.r),
+              border: Border.all(color: Colors.white.withOpacity(0.05)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.notifications_none_rounded, color: Colors.white.withOpacity(0.5), size: 20.sp),
+                    SizedBox(width: 12.w),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'TCG Alert',
+                          style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.w800),
+                        ),
+                        Text(
+                          'PRO FEATURE',
+                          style: TextStyle(color: const Color(0xFFFFCC00), fontSize: 9.sp, fontWeight: FontWeight.w800),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Icon(Icons.lock_rounded, color: const Color(0xFFFFCC00), size: 18.sp),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(height: 24.h),
+        Row(
+          children: [
+            _buildSectionHeader('APP ICONS'),
+            SizedBox(width: 8.w),
+            Icon(Icons.diamond_outlined, color: const Color(0xFFFFCC00), size: 12.sp),
+          ],
+        ),
+        SizedBox(height: 12.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildAppIcon(0, const Color(0xFFFFCC00), Colors.black, true, isBlocked: false),
+            _buildAppIcon(1, Colors.black, const Color(0xFFFFCC00), true, isBlocked: true, borderColor: const Color(0xFFFFCC00)),
+            _buildAppIcon(2, const Color(0xFF2A3A4A), Colors.white, false, isBlocked: true),
+            _buildAppIcon(3, const Color(0xFF8A2BE2), Colors.white, false, isBlocked: true),
+            _buildAppIcon(4, const Color(0xFF8B4513), Colors.white, false, isBlocked: true),
+          ],
+        ),
+        SizedBox(height: 32.h),
+        _buildListTile('Enable 2FA', icon: Icons.shield_outlined),
+        SizedBox(height: 32.h),
+        Container(
+          width: double.infinity,
+          height: 56.h,
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E1E1E),
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          child: Center(
+            child: Text(
+              'Sign Out',
+              style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.w800),
+            ),
+          ),
+        ),
+        SizedBox(height: 24.h),
+        Center(
+          child: Text(
+            'Delete Account',
+            style: TextStyle(color: Colors.redAccent.withOpacity(0.8), fontSize: 14.sp, fontWeight: FontWeight.w700),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildAppearanceSection() {
+  Widget _buildFollowUsTab() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Icon(
-              Icons.dark_mode_outlined,
-              color: const Color(0xFFFFD700),
-              size: 18.sp,
-            ),
-            SizedBox(width: 12.w),
-            Text(
-              'Appearance',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
+        _buildSimpleTile('Support', Icons.email_outlined, trailingText: 'support@photopia.com'),
         SizedBox(height: 16.h),
+        _buildSimpleTile('About us', Icons.info_outline, trailingIcon: Icons.open_in_new),
+        SizedBox(height: 16.h),
+        _buildSimpleTile('Privacy Policy', Icons.privacy_tip_outlined, trailingIcon: Icons.chevron_right),
+        SizedBox(height: 16.h),
+        _buildSimpleTile('Terms and Conditions', Icons.gavel_outlined, trailingIcon: Icons.chevron_right),
+        SizedBox(height: 40.h),
+        Center(
+          child: Text(
+            'SOCIAL MEDIA',
+            style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12.sp, fontWeight: FontWeight.w800, letterSpacing: 1),
+          ),
+        ),
+        SizedBox(height: 24.h),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Expanded(
-              child: _buildThemeToggle(
-                label: 'Light',
-                icon: Icons.wb_sunny_outlined,
-                isSelected: false,
-              ),
-            ),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: _buildThemeToggle(
-                label: 'Dark',
-                icon: Icons.nightlight_round_outlined,
-                isSelected: true,
-              ),
-            ),
+            _buildSocialIcon('X'),
+            SizedBox(width: 24.w),
+            _buildSocialIcon('ig'),
+            SizedBox(width: 24.w),
+            _buildSocialIcon('in'),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildThemeToggle({
-    required String label,
-    required IconData icon,
-    required bool isSelected,
-  }) {
+  Widget _buildSectionHeader(String title) {
+    return Text(
+      title,
+      style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 11.sp, fontWeight: FontWeight.w800, letterSpacing: 1),
+    );
+  }
+
+  Widget _buildListTile(String title, {String? trailingText, IconData? icon}) {
     return Container(
-      height: 70.h,
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       decoration: BoxDecoration(
-        color: const Color(0xFF15181D),
+        color: const Color(0xFF141414),
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(
-          color: isSelected
-              ? const Color(0xFFFFD700).withOpacity(0.4)
-              : Colors.white.withOpacity(0.05),
-          width: isSelected ? 1.5.w : 1.w,
-        ),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(
-            icon,
-            color: isSelected ? const Color(0xFFFFD700) : Colors.white38,
-            size: 20.sp,
+          Row(
+            children: [
+              Icon(icon ?? Icons.language, color: Colors.white.withOpacity(0.5), size: 20.sp),
+              SizedBox(width: 12.w),
+              Text(
+                title,
+                style: TextStyle(color: Colors.white, fontSize: 15.sp, fontWeight: FontWeight.w600),
+              ),
+            ],
           ),
-          SizedBox(height: 4.h),
-          Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? Colors.white : Colors.white38,
-              fontSize: 14.sp,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-            ),
+          Row(
+            children: [
+              if (trailingText != null)
+                Text(
+                  trailingText,
+                  style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13.sp),
+                ),
+              SizedBox(width: 8.w),
+              Icon(Icons.chevron_right, color: Colors.white.withOpacity(0.3), size: 20.sp),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildOtherSettingsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Other Settings',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        SizedBox(height: 16.h),
-        Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFF121212),
-            borderRadius: BorderRadius.circular(20.r),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
-          ),
-          child: Column(
+  Widget _buildSimpleTile(String title, IconData icon, {String? trailingText, IconData? trailingIcon}) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+      decoration: BoxDecoration(
+        color: const Color(0xFF141414),
+        borderRadius: BorderRadius.circular(16.r),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
             children: [
-              _buildSettingsItem('Help & Support'),
-              Divider(color: Colors.white.withOpacity(0.05), height: 1),
-              _buildSettingsItem('Privacy Policy'),
-              Divider(color: Colors.white.withOpacity(0.05), height: 1),
-              _buildSettingsItem('Terms of Service'),
+              Icon(icon, color: Colors.white.withOpacity(0.5), size: 20.sp),
+              SizedBox(width: 12.w),
+              Text(
+                title,
+                style: TextStyle(color: Colors.white, fontSize: 15.sp, fontWeight: FontWeight.w600),
+              ),
             ],
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSettingsItem(String title) {
-    return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
-      title: Text(
-        title,
-        style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 15.sp),
-      ),
-      trailing: Icon(
-        Icons.chevron_right_rounded,
-        color: Colors.white24,
-        size: 20.sp,
-      ),
-      onTap: () {},
-    );
-  }
-
-  Widget _buildLogOutButton() {
-    return Container(
-      width: double.infinity,
-      height: 56.h,
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A1212),
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.redAccent.withOpacity(0.2)),
-      ),
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.logout_rounded,
-              color: Colors.redAccent.withOpacity(0.8),
-              size: 18.sp,
-            ),
-            SizedBox(width: 12.w),
+          if (trailingText != null)
             Text(
-              'Log Out',
-              style: TextStyle(
-                color: Colors.redAccent.withOpacity(0.8),
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w700,
+              trailingText,
+              style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13.sp),
+            )
+          else if (trailingIcon != null)
+            Icon(trailingIcon, color: trailingIcon == Icons.open_in_new ? const Color(0xFFFFCC00).withOpacity(0.8) : Colors.white.withOpacity(0.3), size: 18.sp),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppIcon(int index, Color bgColor, Color iconColor, bool isDynamic, {Color? borderColor, bool isBlocked = false}) {
+    bool isSelected = _selectedAppIconIndex == index;
+    return GestureDetector(
+      onTap: isBlocked ? _navigateToPro : () => setState(() => _selectedAppIconIndex = index),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: 56.r,
+            height: 56.r,
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(16.r),
+              border: borderColor != null ? Border.all(color: borderColor, width: 2) : null,
+              boxShadow: isSelected
+                  ? [BoxShadow(color: bgColor.withOpacity(0.5), blurRadius: 10, spreadRadius: 2)]
+                  : null,
+            ),
+            child: Center(
+              child: Icon(Icons.style, color: iconColor, size: 24.sp),
+            ),
+          ),
+          if (isSelected)
+            Positioned(
+              bottom: -8,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Icon(Icons.check_circle, color: Colors.greenAccent, size: 16.sp),
               ),
             ),
-          ],
-        ),
+          if (isBlocked)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(16.r),
+                ),
+                child: Center(
+                  child: Icon(Icons.lock_rounded, color: const Color(0xFFFFCC00), size: 16.sp),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSocialIcon(String platform) {
+    String assetName = '';
+    if (platform == 'X') {
+      assetName = 'assets/images/x.png';
+    } else if (platform == 'in') {
+      assetName = 'assets/images/l.png';
+    } else {
+      assetName = 'assets/images/v.png';
+    }
+
+    return Container(
+      width: 48.r,
+      height: 48.r,
+      decoration: const BoxDecoration(
+        color: Color(0xFF141414),
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Image.asset(assetName, width: 24.r, height: 24.r, fit: BoxFit.contain, color: Colors.white.withOpacity(0.6)),
       ),
     );
   }

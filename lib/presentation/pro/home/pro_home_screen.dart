@@ -12,7 +12,8 @@ class ProHomeScreen extends StatefulWidget {
   State<ProHomeScreen> createState() => _ProHomeScreenState();
 }
 
-class _ProHomeScreenState extends State<ProHomeScreen> with SingleTickerProviderStateMixin {
+class _ProHomeScreenState extends State<ProHomeScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _chartAnimationController;
   late Animation<double> _chartDrawAnimation;
   bool _isProfessionalTab = true;
@@ -259,8 +260,6 @@ class _ProHomeScreenState extends State<ProHomeScreen> with SingleTickerProvider
     );
   }
 
-
-
   Widget _buildTabs(Color activeColor) {
     return Column(
       children: [
@@ -293,17 +292,17 @@ class _ProHomeScreenState extends State<ProHomeScreen> with SingleTickerProvider
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(bottom: 12.h),
+                            padding: EdgeInsets.only(bottom: 8.h),
                             child: Text(
                               'Dashboard',
                               style: TextStyle(
                                 color: !_isProfessionalTab
                                     ? Colors.white
                                     : Colors.white.withOpacity(0.4),
-                                fontSize: 18.sp,
+                                fontSize: !_isProfessionalTab ? 17.sp : 14.sp,
                                 fontWeight: !_isProfessionalTab
-                                    ? FontWeight.w800
-                                    : FontWeight.w600,
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
                               ),
                             ),
                           ),
@@ -344,7 +343,7 @@ class _ProHomeScreenState extends State<ProHomeScreen> with SingleTickerProvider
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(bottom: 12.h),
+                            padding: EdgeInsets.only(bottom: 8.h),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -354,34 +353,11 @@ class _ProHomeScreenState extends State<ProHomeScreen> with SingleTickerProvider
                                     color: _isProfessionalTab
                                         ? Colors.white
                                         : Colors.white.withOpacity(0.4),
-                                    fontSize: 18.sp,
+                                    fontSize: _isProfessionalTab ? 17.sp : 14.sp,
                                     fontWeight: _isProfessionalTab
-                                        ? FontWeight.w800
-                                        : FontWeight.w600,
-                                    shadows: _isProfessionalTab
-                                        ? [
-                                            Shadow(
-                                              color: Colors.white.withOpacity(0.6),
-                                              blurRadius: 10,
-                                            ),
-                                          ]
-                                        : null,
+                                        ? FontWeight.w700
+                                        : FontWeight.w500,
                                   ),
-                                ),
-                                SizedBox(width: 4.w),
-                                Icon(
-                                  Icons.diamond_rounded,
-                                  color: const Color(0xFFFFD700),
-                                  size: 14.sp,
-                                  shadows: _isProfessionalTab
-                                      ? [
-                                          Shadow(
-                                            color: const Color(0xFFFFD700)
-                                                .withOpacity(0.8),
-                                            blurRadius: 10,
-                                          ),
-                                        ]
-                                      : null,
                                 ),
                               ],
                             ),
@@ -409,12 +385,21 @@ class _ProHomeScreenState extends State<ProHomeScreen> with SingleTickerProvider
                   ),
                 ),
                 const Spacer(),
-                if (!_isProfessionalTab) ...[
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 14.h),
-                    child: Icon(Icons.search, color: Colors.white54, size: 20.sp),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 6.h),
+                  child: IconButton(
+                    onPressed: () {
+                      // TODO: Search functionality
+                    },
+                    icon: Icon(
+                      Icons.search,
+                      color: Colors.white54,
+                      size: 20.sp,
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                   ),
-                ],
+                ),
               ],
             ),
           ],
@@ -504,9 +489,9 @@ class _ProHomeScreenState extends State<ProHomeScreen> with SingleTickerProvider
                   displayPrice,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 34.sp,
+                    fontSize: 28.sp,
                     fontWeight: FontWeight.w900,
-                    letterSpacing: -1,
+                    letterSpacing: -0.5,
                   ),
                 ),
                 if (!isScrubbing) ...[
@@ -727,7 +712,9 @@ class _ProHomeScreenState extends State<ProHomeScreen> with SingleTickerProvider
                             ),
                           ),
                           Text(
-                            _scrubX != null ? (_scrubPrice ?? displayChiudi) : displayChiudi,
+                            _scrubX != null
+                                ? (_scrubPrice ?? displayChiudi)
+                                : displayChiudi,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 13.sp,
@@ -779,8 +766,6 @@ class _ProHomeScreenState extends State<ProHomeScreen> with SingleTickerProvider
       },
     );
   }
-
-
 
   Widget _buildChartRow(String label, String value, {Color? color}) {
     return Row(
@@ -953,40 +938,43 @@ class _ProHomeScreenState extends State<ProHomeScreen> with SingleTickerProvider
         ? _selectedTimeFilterPredict
         : _selectedTimeFilterCore;
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: filters.map((t) {
-        bool isSelected = t == selectedFilter;
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              if (_isProfessionalTab) {
-                _selectedTimeFilterPredict = t;
-              } else {
-                _selectedTimeFilterCore = t;
-              }
-              _scrubX = null; // Reset selection
-            });
-          },
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-            decoration: BoxDecoration(
-              color: isSelected ? Colors.white : Colors.transparent,
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            child: Text(
-              t,
-              style: TextStyle(
-                color: isSelected
-                    ? Colors.black
-                    : Colors.white.withOpacity(0.4),
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w800,
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: filters.map((t) {
+          bool isSelected = t == selectedFilter;
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                if (_isProfessionalTab) {
+                  _selectedTimeFilterPredict = t;
+                } else {
+                  _selectedTimeFilterCore = t;
+                }
+                _scrubX = null;
+              });
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.white : Colors.transparent,
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+              child: Text(
+                t,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected ? Colors.black : Colors.white.withOpacity(0.4),
+                ),
               ),
             ),
-          ),
-        );
-      }).toList(),
+          );
+        }).toList(),
+      ),
     );
   }
 
@@ -1207,7 +1195,7 @@ class _DashboardChartPainter extends CustomPainter {
       } else {
         final prevX = (i - 1) * stepX;
         final prevY = size.height - (normalizedPoints[i - 1] * size.height);
-        
+
         // High-tension Trading-style Bezier Curve
         final cp1 = Offset(prevX + (x - prevX) * 0.55, prevY);
         final cp2 = Offset(prevX + (x - prevX) * 0.45, y);
@@ -1221,14 +1209,14 @@ class _DashboardChartPainter extends CustomPainter {
     final ui.PathMetrics pathMetrics = path.computeMetrics();
     final Path animatedPath = Path();
     Offset? lastPoint;
-    
+
     for (ui.PathMetric pathMetric in pathMetrics) {
       final double extractLength = pathMetric.length * animationValue;
       animatedPath.addPath(
         pathMetric.extractPath(0.0, extractLength),
         Offset.zero,
       );
-      
+
       if (animationValue > 0) {
         lastPoint = pathMetric.getTangentForOffset(extractLength)?.position;
       }
@@ -1239,9 +1227,10 @@ class _DashboardChartPainter extends CustomPainter {
 
     // ── Price Label at the end ───────────────────────────────────────────
     if (lastPoint != null && animationValue > 0.1) {
-      final lastPriceValue = normalizedPoints.last * 278.68; // Scaling to match reference
+      final lastPriceValue =
+          normalizedPoints.last * 278.68; // Scaling to match reference
       final priceStr = lastPriceValue.toStringAsFixed(2);
-      
+
       final textPainter = TextPainter(
         text: TextSpan(
           text: priceStr,

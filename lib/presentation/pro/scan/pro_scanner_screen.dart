@@ -64,70 +64,49 @@ class _ProScannerScreenState extends State<ProScannerScreen> {
   }
 
   Widget _buildHeader(BuildContext context) {
-    return Padding(
+    return Container(
       padding: EdgeInsets.symmetric(vertical: 12.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GestureDetector(
-            onTap: widget.onProfileTap,
+          Container(
+            height: 44.h,
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            decoration: BoxDecoration(
+              color: const Color(0xFF121212),
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: Colors.white.withOpacity(0.08)),
+            ),
             child: Row(
               children: [
-                Container(
-                  width: 40.r,
-                  height: 40.r,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFFFFCC00), width: 1.5),
-                  ),
-                  child: ClipOval(
-                    child: Image.asset(
-                      'assets/images/profile.png',
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          Icon(Icons.person, color: Colors.white24, size: 20.sp),
+                Icon(Icons.search, color: Colors.white38, size: 20.sp),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: TextField(
+                    style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                    decoration: InputDecoration(
+                      hintText: 'Search scanner history...',
+                      hintStyle: TextStyle(
+                        color: Colors.white30,
+                        fontSize: 14.sp,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
                     ),
                   ),
-                ),
-                SizedBox(width: 12.w),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Ibrahim', style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.w800)),
-                    Row(
-                      children: [
-                        Icon(Icons.diamond_outlined, color: const Color(0xFFFFCC00), size: 10.sp),
-                        SizedBox(width: 4.w),
-                        Text('Professional', style: TextStyle(color: const Color(0xFFFFCC00), fontSize: 11.sp, fontWeight: FontWeight.w600)),
-                      ],
-                    ),
-                  ],
                 ),
               ],
             ),
           ),
-          Row(
-            children: [
-              Icon(Icons.search, color: Colors.white, size: 24.sp),
-              SizedBox(width: 16.w),
-              Stack(
-                children: [
-                  Icon(Icons.notifications_none_rounded, color: Colors.white, size: 24.sp),
-                  Positioned(
-                    right: 2,
-                    top: 2,
-                    child: Container(
-                      width: 6.r,
-                      height: 6.r,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFFFCC00),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+          SizedBox(height: 12.h),
+          Text(
+            'Scanner',
+            style: TextStyle(
+              fontSize: 22.sp,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
           ),
         ],
       ),

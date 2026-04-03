@@ -21,7 +21,6 @@ class ProMarketAnalysisScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildSearchBar(),
                       SizedBox(height: 24.h),
                       _buildSectionHeader('Market Analysis', showTimer: true),
                       SizedBox(height: 16.h),
@@ -60,7 +59,7 @@ class ProMarketAnalysisScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 12.h),
                       _buildTrendingItem(
-                        'Charizard VMAX',
+                        '€589.99',
                         'CP',
                         '€589.99',
                         '-15.2%',
@@ -79,74 +78,53 @@ class ProMarketAnalysisScreen extends StatelessWidget {
   }
 
   Widget _buildHeader() {
-    return Padding(
+    return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-      child: Row(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 1.w),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            radius: 22.r,
-            backgroundImage: const NetworkImage('https://i.pravatar.cc/150?u=ibrahim'), // Placeholder
-          ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Container(
+            height: 44.h,
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            decoration: BoxDecoration(
+              color: const Color(0xFF141414),
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: Colors.white.withOpacity(0.08)),
+            ),
+            child: Row(
               children: [
-                Text(
-                  'Ibrahim',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.diamond_outlined, color: Color(0xFFFFD700), size: 12),
-                    SizedBox(width: 4.w),
-                    Text(
-                      'Professional',
-                      style: TextStyle(
-                        color: const Color(0xFFFFD700),
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w600,
+                Icon(Icons.search, color: Colors.white38, size: 20.sp),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: TextField(
+                    style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                    decoration: InputDecoration(
+                      hintText: 'Search markets...',
+                      hintStyle: TextStyle(
+                        color: Colors.white30,
+                        fontSize: 14.sp,
                       ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.notifications_none_rounded, color: Colors.white, size: 24.sp),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSearchBar() {
-    return Container(
-      height: 50.h,
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      decoration: BoxDecoration(
-        color: const Color(0xFF121212),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.search, color: Colors.white.withOpacity(0.5), size: 20.sp),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search markets...',
-                hintStyle: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 14.sp),
-                border: InputBorder.none,
-              ),
-              style: const TextStyle(color: Colors.white),
+          SizedBox(height: 12.h),
+          Text(
+            'Markets',
+            style: TextStyle(
+              fontSize: 22.sp,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
             ),
           ),
         ],

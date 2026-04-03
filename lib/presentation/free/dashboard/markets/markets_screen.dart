@@ -16,6 +16,8 @@ class MarketsScreen extends StatefulWidget {
 }
 
 class _MarketsScreenState extends State<MarketsScreen> {
+  final TextEditingController _searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -34,7 +36,10 @@ class _MarketsScreenState extends State<MarketsScreen> {
             if (controller.isLoading) {
               return const Center(child: CircularProgressIndicator());
             }
-            return _MarketsBody(controller: controller);
+            return _MarketsBody(
+              controller: controller,
+              searchController: _searchController,
+            );
           },
         ),
       ),
@@ -43,18 +48,22 @@ class _MarketsScreenState extends State<MarketsScreen> {
 }
 
 class _MarketsBody extends StatelessWidget {
-  const _MarketsBody({required this.controller});
+  const _MarketsBody({
+    required this.controller,
+    required this.searchController,
+  });
   final MarketsController controller;
+  final TextEditingController searchController;
 
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
-        SliverToBoxAdapter(child: _AppBar()),
+        SliverToBoxAdapter(child: _AppBar(searchController: searchController)),
         SliverToBoxAdapter(
           child: Padding(
-            padding: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 16.h),
+            padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
             child: Row(
               children: [
                 Icon(
@@ -124,78 +133,60 @@ class _MarketsBody extends StatelessWidget {
 }
 
 class _AppBar extends StatelessWidget {
+  const _AppBar({required this.searchController});
+  final TextEditingController searchController;
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      child: Row(
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 1.w),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 38.w,
-            height: 38.h,
+            height: 44.h,
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
             decoration: BoxDecoration(
-              color: AppColors.cardBackground,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.divider),
+              color: const Color(0xFF1A1A1A),
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: Colors.white.withOpacity(0.08)),
             ),
-            child: Center(
-              child: Text(
-                'F',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16.sp,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(width: 10.w),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Markets',
-                style: AppTextStyles.titleMedium.copyWith(fontSize: 16.sp),
-              ),
-              Text(
-                'Free Account',
-                style: AppTextStyles.caption.copyWith(fontSize: 11.sp),
-              ),
-            ],
-          ),
-          const Spacer(),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.search_rounded,
-              color: AppColors.textSecondary,
-              size: 24.sp,
-            ),
-          ),
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.notifications_outlined,
-                  color: AppColors.textSecondary,
-                  size: 24.sp,
-                ),
-              ),
-              Positioned(
-                top: 8.h,
-                right: 8.w,
-                child: Container(
-                  width: 8.w,
-                  height: 8.h,
-                  decoration: const BoxDecoration(
-                    color: AppColors.negative,
-                    shape: BoxShape.circle,
+            child: Row(
+              children: [
+                Icon(Icons.search, color: Colors.white38, size: 20.sp),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: TextField(
+                    controller: searchController,
+                    style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                    decoration: InputDecoration(
+                      hintText: 'Search markets...',
+                      hintStyle: TextStyle(
+                        color: Colors.white30,
+                        fontSize: 14.sp,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
+          ),
+          SizedBox(height: 12.h),
+          Text(
+            'Markets',
+            style: TextStyle(
+              fontSize: 22.sp,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
           ),
         ],
       ),
@@ -209,85 +200,116 @@ class _MarketVolumeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppCard(
-      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-      padding: EdgeInsets.all(16.r),
-      child: Row(
+    return Container(
+      height: 160.h,
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A1A1A),
+        borderRadius: BorderRadius.circular(28.r),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
+      child: Stack(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10.r),
-            child: item.imageUrl != null
-                ? Image.asset(
-                    item.imageUrl!,
-                    width: 52.w,
-                    height: 52.h,
-                    fit: BoxFit.cover,
-                  )
-                : Container(
-                    width: 52.w,
-                    height: 52.h,
-                    color: item.avatarColor.withOpacity(0.2),
-                    child: Icon(
-                      Icons.style_rounded,
-                      color: item.avatarColor,
-                      size: 26.sp,
-                    ),
-                  ),
+          Positioned(
+            right: -20,
+            bottom: -20,
+            child: Opacity(
+              opacity: 0.05,
+              child: Text(
+                item.category.toUpperCase(),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 80.sp,
+                  fontWeight: FontWeight.w900,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
           ),
-          SizedBox(width: 16.w),
-          Expanded(
+          Padding(
+            padding: EdgeInsets.all(20.r),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  item.category,
-                  style: AppTextStyles.titleMedium.copyWith(fontSize: 16.sp),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 40.r,
+                          height: 40.r,
+                          decoration: BoxDecoration(
+                            color: item.imageUrl != null
+                                ? Colors.transparent
+                                : item.avatarColor.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: item.imageUrl != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(20.r),
+                                  child: Image.asset(item.imageUrl!,
+                                      fit: BoxFit.cover),
+                                )
+                              : Icon(Icons.style_rounded,
+                                  color: item.avatarColor, size: 20),
+                        ),
+                        SizedBox(width: 12.w),
+                        Text(
+                          item.category,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Icon(Icons.more_horiz, color: Colors.white.withOpacity(0.3)),
+                  ],
                 ),
-                SizedBox(height: 4.h),
-                Text(
-                  item.formattedSold,
-                  style: AppTextStyles.caption.copyWith(fontSize: 11.sp),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildMarketStat('VOLUME', item.formattedVolume),
+                    _buildMarketStat('SOLD', item.formattedSold, isCenter: true),
+                    _buildMarketStat('AVG PRICE', item.formattedAvg),
+                  ],
                 ),
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                item.formattedVolume,
-                style: AppTextStyles.titleMedium.copyWith(fontSize: 16.sp),
-              ),
-              SizedBox(height: 4.h),
-              Row(
-                children: [
-                  Icon(
-                    item.changePercent >= 0
-                        ? Icons.arrow_upward_rounded
-                        : Icons.arrow_downward_rounded,
-                    color: item.changePercent >= 0
-                        ? AppColors.positive
-                        : AppColors.negative,
-                    size: 12.sp,
-                  ),
-                  Text(
-                    ' ${item.changePercent.abs().toStringAsFixed(1)}%',
-                    style:
-                        (item.changePercent >= 0
-                                ? AppTextStyles.positive
-                                : AppTextStyles.negative)
-                            .copyWith(fontSize: 11.sp),
-                  ),
-                ],
-              ),
-              Text(
-                item.formattedAvg,
-                style: AppTextStyles.caption.copyWith(fontSize: 10.sp),
-              ),
-            ],
-          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildMarketStat(String label, String value, {bool isCenter = false}) {
+    return Column(
+      crossAxisAlignment:
+          isCenter ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.4),
+            fontSize: 11.sp,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1,
+          ),
+        ),
+        SizedBox(height: 6.h),
+        Text(
+          value,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -298,23 +320,47 @@ class _TrendingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppCard(
+    return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
       padding: EdgeInsets.all(16.r),
+      decoration: BoxDecoration(
+        color: const Color(0xFF121212),
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
       child: Row(
         children: [
+          Container(
+            width: 50.r,
+            height: 50.r,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: const Icon(Icons.image_outlined, color: Colors.white24),
+          ),
+          SizedBox(width: 16.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   item.name,
-                  style: AppTextStyles.titleMedium.copyWith(fontSize: 16.sp),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w700),
+                ),
+                Text(
+                  item.subtitle,
+                  style: TextStyle(
+                      color: Colors.white.withOpacity(0.4), fontSize: 12.sp),
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  item.subtitle,
-                  style: AppTextStyles.caption.copyWith(fontSize: 11.sp),
+                  'VOL: €125K',
+                  style: TextStyle(
+                      color: Colors.white.withOpacity(0.4), fontSize: 10.sp),
                 ),
               ],
             ),
@@ -324,16 +370,38 @@ class _TrendingCard extends StatelessWidget {
             children: [
               Text(
                 item.formattedValue,
-                style: AppTextStyles.titleMedium.copyWith(fontSize: 16.sp),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w800),
               ),
-              SizedBox(height: 4.h),
+              Row(
+                children: [
+                  Icon(
+                      item.isPositive
+                          ? Icons.arrow_drop_up
+                          : Icons.arrow_drop_down,
+                      color: item.isPositive
+                          ? Colors.greenAccent
+                          : Colors.redAccent,
+                      size: 20),
+                  Text(
+                    item.formattedChange,
+                    style: TextStyle(
+                        color: item.isPositive
+                            ? Colors.greenAccent
+                            : Colors.redAccent,
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
               Text(
-                item.formattedChange,
-                style:
-                    (item.isPositive
-                            ? AppTextStyles.positive
-                            : AppTextStyles.negative)
-                        .copyWith(fontSize: 12.sp, fontWeight: FontWeight.w600),
+                'FREE INSIGHTS',
+                style: TextStyle(
+                    color: AppColors.accent,
+                    fontSize: 9.sp,
+                    fontWeight: FontWeight.w800),
               ),
             ],
           ),

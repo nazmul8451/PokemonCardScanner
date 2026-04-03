@@ -28,41 +28,97 @@ class _ProWalletScreenState extends State<ProWalletScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0B0E11), // Dark background
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0B0E11),
-        elevation: 0,
-        centerTitle: true,
-        title: Text('Wallet', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 16.sp, fontWeight: FontWeight.w700)),
-      ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: 12.h),
-              _buildBalance(),
-              SizedBox(height: 32.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: _buildActionsRow(),
+        child: Column(
+          children: [
+            _buildAppBar(context),
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 12.h),
+                    _buildBalance(),
+                    SizedBox(height: 32.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: _buildActionsRow(),
+                    ),
+                    SizedBox(height: 48.h),
+                    _buildChart(),
+                    SizedBox(height: 32.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: _buildTimeFilter(),
+                    ),
+                    SizedBox(height: 40.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: _buildGrid(context),
+                    ),
+                    SizedBox(height: 40.h),
+                  ],
+                ),
               ),
-              SizedBox(height: 48.h),
-              _buildChart(),
-              SizedBox(height: 32.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: _buildTimeFilter(),
-              ),
-              SizedBox(height: 40.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: _buildGrid(context),
-              ),
-              SizedBox(height: 40.h),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 1.w),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Wallet',
+            style: TextStyle(
+              fontSize: 22.sp,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          Container(
+            height: 44.h,
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            decoration: BoxDecoration(
+              color: const Color(0xFF121212),
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: Colors.white.withOpacity(0.08)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.search, color: Colors.white38, size: 20.sp),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: TextField(
+                    style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                    decoration: InputDecoration(
+                      hintText: 'Search cards...',
+                      hintStyle: TextStyle(
+                        color: Colors.white30,
+                        fontSize: 14.sp,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

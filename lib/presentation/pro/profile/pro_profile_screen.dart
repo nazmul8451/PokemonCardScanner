@@ -39,28 +39,54 @@ class _ProProfileScreenState extends State<ProProfileScreen> {
   }
 
   Widget _buildAppBar() {
-    return Padding(
-      padding: EdgeInsets.only(left: 20.w, right: 20.w, top: 12.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 1.w),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              // Assuming it's a bottom nav tab, no strict back button needed, but if wanted we can show title.
-              // We'll mimic the second screenshot which has no back button for a cleaner look.
-              Text(
-                'Profile',
-                style: TextStyle(color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.w800),
-              ),
-            ],
+          Text(
+            'Profile',
+            style: TextStyle(
+              fontSize: 22.sp,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
           ),
+          SizedBox(height: 12.h),
           Container(
-            padding: EdgeInsets.all(8.r),
+            height: 44.h,
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
             decoration: BoxDecoration(
               color: const Color(0xFF141414),
-              shape: BoxShape.circle,
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: Colors.white.withOpacity(0.08)),
             ),
-            child: Icon(Icons.dark_mode_outlined, color: const Color(0xFFFFD700), size: 20.sp),
+            child: Row(
+              children: [
+                Icon(Icons.search, color: Colors.white38, size: 20.sp),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: TextField(
+                    style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                    decoration: InputDecoration(
+                      hintText: 'Search settings...',
+                      hintStyle: TextStyle(
+                        color: Colors.white30,
+                        fontSize: 14.sp,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

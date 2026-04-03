@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../../../controller/free/scan_controller.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_text_styles.dart';
 import '../../../commonWidgets/common_widgets.dart';
 import '../professional/professional_screen.dart';
 import 'scan_result_screen.dart';
@@ -48,73 +47,47 @@ class ScanScreen extends StatelessWidget {
           bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 1.w),
         ),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            radius: 22.r,
-            backgroundColor: const Color(0xFF2A2D3E),
-            child: Text(
-              'F',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
-              ),
+          Container(
+            height: 44.h,
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            decoration: BoxDecoration(
+              color: const Color(0xFF121212),
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: Colors.white.withOpacity(0.08)),
             ),
-          ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Text(
-                  'Scanner',
-                  style: AppTextStyles.titleMedium.copyWith(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Text(
-                  'Free Account',
-                  style: AppTextStyles.caption.copyWith(
-                    fontSize: 12.sp,
-                    color: AppColors.textSecondary,
+                Icon(Icons.search, color: Colors.white38, size: 20.sp),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: TextField(
+                    style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                    decoration: InputDecoration(
+                      hintText: 'Search scanner history...',
+                      hintStyle: TextStyle(
+                        color: Colors.white30,
+                        fontSize: 14.sp,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.search_rounded,
-              color: Colors.white.withOpacity(0.8),
-              size: 24.sp,
+          SizedBox(height: 12.h),
+          Text(
+            'Scanner',
+            style: TextStyle(
+              fontSize: 22.sp,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
             ),
-          ),
-          Stack(
-            children: [
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.notifications_none_rounded,
-                  color: Colors.white.withOpacity(0.8),
-                  size: 24.sp,
-                ),
-              ),
-              Positioned(
-                right: 12.w,
-                top: 12.h,
-                child: Container(
-                  width: 8.r,
-                  height: 8.r,
-                  decoration: const BoxDecoration(
-                    color: Colors.redAccent,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ),

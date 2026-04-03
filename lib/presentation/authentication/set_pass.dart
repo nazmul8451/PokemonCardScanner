@@ -41,7 +41,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
                     onTap: () => Navigator.pop(context),
                     child: Icon(Icons.arrow_back, color: Colors.white, size: 24.sp),
                   ),
-                  Icon(Icons.diamond_outlined, color: AppColors.primary, size: 28.sp),
+                  Image.asset('assets/images/image.png', width: 40.w, height: 40.w, fit: BoxFit.contain),
                   SizedBox(width: 24.w),
                 ],
               ),

@@ -48,7 +48,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     onTap: () => Navigator.pop(context),
                     child: Icon(Icons.arrow_back, color: Colors.white, size: 24.sp),
                   ),
-                  Icon(Icons.diamond_outlined, color: AppColors.primary, size: 28.sp),
+                  // Assuming `img.png` is the golden T. Replace this with the exact file name if different.
+                  Image.asset(
+                    'assets/images/image.png',
+                    width: 40.w,
+                    height: 40.w,
+                    fit: BoxFit.contain,
+                  ),
                   SizedBox(width: 24.w),
                 ],
               ),
@@ -187,9 +193,62 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
               ),
+              SizedBox(height: 32.h),
+              Row(
+                children: [
+                  Expanded(child: Divider(color: Colors.white.withOpacity(0.2), thickness: 1)),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: Text('Or sign up with', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 14.sp)),
+                  ),
+                  Expanded(child: Divider(color: Colors.white.withOpacity(0.2), thickness: 1)),
+                ],
+              ),
+              SizedBox(height: 24.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildSocialBtn(
+                    icon: Icons.apple,
+                    label: 'Apple',
+                    onTap: () {},
+                  ),
+                  SizedBox(width: 16.w),
+                  _buildSocialBtn(
+                    icon: Icons.g_mobiledata_rounded,
+                    label: 'Google',
+                    onTap: () {},
+                  ),
+                ],
+              ),
               SizedBox(height: 24.h),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSocialBtn({required IconData icon, required String label, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: Colors.white, size: 24.sp),
+            SizedBox(width: 8.w),
+            Text(
+              label,
+              style: TextStyle(color: Colors.white, fontSize: 14.sp, fontWeight: FontWeight.w600),
+            ),
+          ],
         ),
       ),
     );
