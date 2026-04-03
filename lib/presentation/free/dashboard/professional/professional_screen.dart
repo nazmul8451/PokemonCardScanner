@@ -149,7 +149,7 @@ class _ProfessionalScreenState extends State<ProfessionalScreen> {
             angle: -45 * 3.14159 / 180,
             child: Center(
               child: Image.asset(
-                'assets/images/diamond_icon.png',
+                'assets/images/image.png',
                 width: 44.w,
                 height: 44.h,
                 fit: BoxFit.contain,

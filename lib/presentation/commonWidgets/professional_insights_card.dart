@@ -101,7 +101,7 @@ class _ProfessionalInsightsCardState extends State<ProfessionalInsightsCard>
                   ],
                 ),
                 child: Image.asset(
-                  'assets/images/diamond_icon.png',
+                'assets/images/image.png',
                   width: 26.w,
                   height: 26.h,
                   fit: BoxFit.contain,

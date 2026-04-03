@@ -411,7 +411,7 @@ class WalletScreen extends StatelessWidget {
       child: Column(
         children: [
           Image.asset(
-            'assets/images/diamond_icon.png',
+            'assets/images/image.png',
             width: 70.w,
             height: 70.w,
             errorBuilder: (context, error, stackTrace) => Icon(

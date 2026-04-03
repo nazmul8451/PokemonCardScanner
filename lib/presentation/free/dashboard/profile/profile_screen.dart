@@ -373,7 +373,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSimpleTile('Support', Icons.email_outlined, trailingText: 'support@photopia.com'),
+        _buildSimpleTile('Support', Icons.email_outlined, trailingText: 'support@pokemonpro.com'),
         SizedBox(height: 16.h),
         _buildSimpleTile('About us', Icons.info_outline, trailingIcon: Icons.open_in_new),
         SizedBox(height: 16.h),

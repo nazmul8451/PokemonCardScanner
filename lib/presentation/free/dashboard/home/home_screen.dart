@@ -941,7 +941,7 @@ class _HomeScreenState extends State<HomeScreen>
                         SizedBox(width: 12.w),
                         Expanded(
                           child: Text(
-                            'Unlock $t forecasts with Photopia PRO',
+                            'Unlock $t forecasts with Pokemon PRO',
                             style: TextStyle(color: Colors.white, fontSize: 13.sp),
                           ),
                         ),
