@@ -1195,6 +1195,14 @@ class _HomeChartPainter extends CustomPainter {
       ..strokeJoin = StrokeJoin.round
       ..style = PaintingStyle.stroke;
 
+    final glowPaint = Paint()
+      ..color = chartColor.withOpacity(0.6)
+      ..strokeWidth = 10.0
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..style = PaintingStyle.stroke
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8.0);
+
     final path = Path();
     final double stepX = size.width / (normalizedPoints.length - 1);
 
@@ -1234,6 +1242,7 @@ class _HomeChartPainter extends CustomPainter {
       }
     }
 
+    canvas.drawPath(animatedPath, glowPaint);
     canvas.drawPath(animatedPath, paint);
 
     if (lastPoint != null && animationValue > 0.1) {
@@ -1307,15 +1316,36 @@ class _HomeChartPainter extends CustomPainter {
     Offset dotPos = Offset(dotX, dotY);
 
     final gridPaint = Paint()
-      ..color = chartColor.withOpacity(0.5)
-      ..strokeWidth = 1.5
+      ..color = chartColor.withOpacity(0.4)
+      ..strokeWidth = 1.2
       ..style = PaintingStyle.stroke;
 
+    final gridGlowPaint = Paint()
+      ..color = chartColor.withOpacity(0.3)
+      ..strokeWidth = 4.0
+      ..style = PaintingStyle.stroke
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
+
+    canvas.drawLine(
+      Offset(dotPos.dx, 0),
+      Offset(dotPos.dx, size.height),
+      gridGlowPaint,
+    );
     canvas.drawLine(
       Offset(dotPos.dx, 0),
       Offset(dotPos.dx, size.height),
       gridPaint,
     );
+
+    // Draw Dot with Glow
+    final dotGlow = Paint()
+      ..color = chartColor.withOpacity(0.4)
+      ..style = PaintingStyle.fill
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10.0);
+
+    if (scrubX != null) {
+      canvas.drawCircle(dotPos, 15, dotGlow);
+    }
     canvas.drawCircle(dotPos, 5, dotPaint);
   }
 
