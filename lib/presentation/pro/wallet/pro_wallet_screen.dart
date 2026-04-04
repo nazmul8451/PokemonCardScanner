@@ -154,21 +154,38 @@ class _ProWalletScreenState extends State<ProWalletScreen> {
 
   Widget _buildActionItem(IconData icon, String label) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
           width: 56.r,
           height: 56.r,
+          alignment: Alignment.center,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.transparent,
-            border: Border.all(color: const Color(0xFF00E5FF).withOpacity(0.3), width: 1.5),
+            color: const Color(0xFF121212),
+            border: Border.all(
+              color: const Color(0xFF00E5FF).withOpacity(0.3),
+              width: 1.5,
+            ),
           ),
-          child: Center(
-            child: Icon(icon, color: const Color(0xFF00E5FF), size: 24.sp),
+          child: Icon(
+            icon,
+            color: const Color(0xFF00E5FF),
+            size: 24.sp,
           ),
         ),
-        SizedBox(height: 8.h),
-        Text(label, style: TextStyle(color: const Color(0xFF00E5FF), fontSize: 11.sp, fontWeight: FontWeight.w700)),
+        SizedBox(height: 10.h),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: const Color(0xFF00E5FF).withOpacity(0.9),
+            fontSize: 11.sp,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.2,
+          ),
+        ),
       ],
     );
   }
@@ -385,6 +402,14 @@ class _WalletChartPainter extends CustomPainter {
       ..strokeJoin = StrokeJoin.round
       ..style = PaintingStyle.stroke;
 
+    final glowPaint = Paint()
+      ..color = chartColor.withOpacity(0.6)
+      ..strokeWidth = 10.0
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..style = PaintingStyle.stroke
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8.0);
+
     final path = Path();
     final fillPath = Path();
     
@@ -445,6 +470,7 @@ class _WalletChartPainter extends CustomPainter {
       lastPoint = pathMetric.getTangentForOffset(extractLength)?.position;
     }
 
+    canvas.drawPath(animatedPath, glowPaint);
     canvas.drawPath(animatedPath, paint);
 
     // ── Price Label at the end ───────────────────────────────────────────
@@ -518,13 +544,29 @@ class _WalletChartPainter extends CustomPainter {
     
     if (scrubX != null) {
       final gridPaint = Paint()
-        ..color = chartColor.withOpacity(0.5)
-        ..strokeWidth = 1.5
+        ..color = chartColor.withOpacity(0.4)
+        ..strokeWidth = 1.2
         ..style = PaintingStyle.stroke;
+      
+      final gridGlowPaint = Paint()
+        ..color = chartColor.withOpacity(0.3)
+        ..strokeWidth = 4.0
+        ..style = PaintingStyle.stroke
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
+
+      canvas.drawLine(Offset(dotPos.dx, 0), Offset(dotPos.dx, size.height), gridGlowPaint);
       canvas.drawLine(Offset(dotPos.dx, 0), Offset(dotPos.dx, size.height), gridPaint);
     }
     
+    final dotGlow = Paint()
+      ..color = chartColor.withOpacity(0.4)
+      ..style = PaintingStyle.fill
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10.0);
+
     canvas.drawCircle(dotPos, scrubX != null ? 24 : 16, dotShadow);
+    if (scrubX != null) {
+      canvas.drawCircle(dotPos, 15, dotGlow);
+    }
     canvas.drawCircle(dotPos, 5, dotPaint);
   }
 

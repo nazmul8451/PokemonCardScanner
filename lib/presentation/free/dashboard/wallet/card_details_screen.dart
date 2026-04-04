@@ -402,12 +402,12 @@ class _CardDetailsChartPainter extends CustomPainter {
     if (normalizedPoints.isEmpty) return;
 
     final glowOuter = Paint()
-      ..color = chartColor.withOpacity(0.2)
-      ..strokeWidth = 12
+      ..color = chartColor.withOpacity(0.6)
+      ..strokeWidth = 10.0
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
       ..style = PaintingStyle.stroke
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8.0);
 
     final paint = Paint()
       ..color = chartColor
@@ -527,18 +527,31 @@ class _CardDetailsChartPainter extends CustomPainter {
 
       Offset dotPos = Offset(dotX, dotY);
 
-      // Vertical line
+      // Vertical line with Glow
       final gridPaint = Paint()
-        ..color = Colors.white.withOpacity(0.4)
+        ..color = Colors.white.withOpacity(0.3)
         ..strokeWidth = 1.0
         ..style = PaintingStyle.stroke;
 
+      final gridGlowPaint = Paint()
+        ..color = chartColor.withOpacity(0.3)
+        ..strokeWidth = 3.0
+        ..style = PaintingStyle.stroke
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.0);
+
+      canvas.drawLine(Offset(dotPos.dx, 0), Offset(dotPos.dx, size.height), gridGlowPaint);
       canvas.drawLine(Offset(dotPos.dx, 0), Offset(dotPos.dx, size.height), gridPaint);
 
       final dotShadow = Paint()..color = chartColor.withOpacity(0.4)..style = PaintingStyle.fill;
+      final dotGlow = Paint()
+        ..color = chartColor.withOpacity(0.5)
+        ..style = PaintingStyle.fill
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12.0);
+      
       final dotInner = Paint()..color = chartColor..style = PaintingStyle.fill;
       final dotCore = Paint()..color = const Color(0xFF0B0E11)..style = PaintingStyle.fill;
 
+      canvas.drawCircle(dotPos, 15, dotGlow);
       canvas.drawCircle(dotPos, 12, dotShadow);
       canvas.drawCircle(dotPos, 6, dotInner);
       canvas.drawCircle(dotPos, 3, dotCore);

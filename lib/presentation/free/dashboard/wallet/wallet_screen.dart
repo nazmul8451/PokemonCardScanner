@@ -1,18 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_text_styles.dart';
-import '../../../commonWidgets/common_widgets.dart';
-import '../professional/professional_screen.dart';
+import 'dart:ui' as ui;
 import 'card_details_screen.dart';
 
-class WalletScreen extends StatelessWidget {
+class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
+
+  @override
+  State<WalletScreen> createState() => _WalletScreenState();
+}
+
+class _WalletScreenState extends State<WalletScreen> {
+  String _selectedTimeFilter = '1M';
+  double? _scrubX;
+
+  final List<double> chartPoints = [0.2, 0.25, 0.23, 0.4, 0.5, 0.48, 0.55, 0.7, 0.65, 0.8, 0.85, 0.8];
+
+  void _updateScrubPosition(double localX) {
+    if (_scrubX != localX) {
+      setState(() {
+        _scrubX = localX;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0B0E11),
+      backgroundColor: const Color(0xFF0B0E11), // Dark background
       body: SafeArea(
         child: Column(
           children: [
@@ -20,21 +35,29 @@ class WalletScreen extends StatelessWidget {
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: 16.h),
-                    _buildStatsRow(),
-                    SizedBox(height: 16.h),
-                    _buildLimitedFeaturesCard(context),
-                    SizedBox(height: 24.h),
-                    _buildSectionHeader(context),
-                    SizedBox(height: 16.h),
-                    _buildCardList(context),
-                    SizedBox(height: 24.h),
-                    _buildProAnalyticsCard(context),
-                    SizedBox(height: 24.h),
+                    SizedBox(height: 12.h),
+                    _buildBalance(),
+                    SizedBox(height: 32.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: _buildActionsRow(),
+                    ),
+                    SizedBox(height: 48.h),
+                    _buildChart(),
+                    SizedBox(height: 32.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: _buildTimeFilter(),
+                    ),
+                    SizedBox(height: 40.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: _buildGrid(context),
+                    ),
+                    SizedBox(height: 40.h),
                   ],
                 ),
               ),
@@ -56,29 +79,13 @@ class WalletScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 22.r,
-                backgroundColor: const Color(0xFF2A2D3E),
-                child: Text(
-                  'F',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              SizedBox(width: 12.w),
-              Text(
-                'Wallet',
-                style: AppTextStyles.titleMedium.copyWith(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
+          Text(
+            'Wallet',
+            style: TextStyle(
+              fontSize: 22.sp,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
           ),
           SizedBox(height: 12.h),
           Container(
@@ -116,340 +123,457 @@ class WalletScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsRow() {
+  Widget _buildBalance() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(
-          child: _buildStatCard(
-            label: 'Invested',
-            value: '€1.080',
-            icon: Icons.attach_money_rounded,
-          ),
-        ),
+        Text('€1,312.07',
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 34.sp,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -1)),
         SizedBox(width: 12.w),
-        Expanded(
-          child: _buildStatCard(
-            label: 'ROI',
-            value: '+32.0%',
-            icon: Icons.trending_up_rounded,
-            valueColor: const Color(0xFFFFD700),
-          ),
-        ),
+        Icon(Icons.visibility_outlined,
+            color: Colors.white.withOpacity(0.3), size: 22.sp),
       ],
     );
   }
 
-  Widget _buildStatCard({
-    required String label,
-    required String value,
-    required IconData icon,
-    Color? valueColor,
-  }) {
-    return Container(
-      padding: EdgeInsets.all(16.r),
-      decoration: BoxDecoration(
-        color: const Color(0xFF121212),
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05), width: 1.w),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                icon,
-                size: 14.sp,
-                color: const Color(0xFFFFCC00).withOpacity(0.7),
-              ),
-              SizedBox(width: 4.w),
-              Text(
-                label,
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 12.sp,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            value,
-            style: TextStyle(
-              color: valueColor ?? Colors.white,
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLimitedFeaturesCard(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(20.r),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A170F),
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(
-          color: const Color(0xFFFFD700).withOpacity(0.15),
-          width: 1.w,
-        ),
-      ),
-      child: Column(
-        children: [
-          Text(
-            'Limited Wallet Features',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            'Upgrade for alerts, analytics, and ROI predictions',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 13.sp),
-          ),
-          SizedBox(height: 16.h),
-          AppPremiumButton(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ProfessionalScreen(),
-                ),
-              );
-            },
-            label: 'Unlock Pro Features',
-            height: 46.h,
-            fontSize: 15.sp,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionHeader(BuildContext context) {
+  Widget _buildActionsRow() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          'Your Cards',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20.sp,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        Expanded(child: _buildActionItem(Icons.auto_graph_rounded, 'Top Performers')),
+        Expanded(child: _buildActionItem(Icons.add, 'Add')),
+        Expanded(child: _buildActionItem(Icons.ios_share, 'Share')),
+        Expanded(child: _buildActionItem(Icons.send_rounded, 'Export')),
+      ],
+    );
+  }
+
+  Widget _buildActionItem(IconData icon, String label) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          width: 56.r,
+          height: 56.r,
+          alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: const Color(0xFF1A170F),
-            borderRadius: BorderRadius.circular(12.r),
+            shape: BoxShape.circle,
+            color: const Color(0xFF121212),
             border: Border.all(
-              color: const Color(0xFFFFD700).withOpacity(0.2),
-              width: 1.w,
+              color: const Color(0xFF00E5FF).withOpacity(0.3),
+              width: 1.5,
             ),
           ),
-          child: Row(
-            children: [
-              Icon(Icons.add, size: 16.sp, color: const Color(0xFFFFD700)),
-              SizedBox(width: 4.w),
-              Text(
-                'Add Card',
-                style: TextStyle(
-                  color: const Color(0xFFFFD700),
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+          child: Icon(
+            icon,
+            color: const Color(0xFF00E5FF),
+            size: 24.sp,
+          ),
+        ),
+        SizedBox(height: 10.h),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: const Color(0xFF00E5FF).withOpacity(0.9),
+            fontSize: 11.sp,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.2,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildCardList(BuildContext context) {
-    return Column(
+  Widget _buildChart() {
+    return SizedBox(
+      height: 180.h,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            top: 0,
+            child: GestureDetector(
+              onHorizontalDragUpdate: (details) {
+                _updateScrubPosition(details.localPosition.dx);
+              },
+              onTapDown: (details) {
+                _updateScrubPosition(details.localPosition.dx);
+              },
+              onHorizontalDragEnd: (_) {
+                setState(() {
+                  _scrubX = null;
+                });
+              },
+              onTapUp: (_) {
+                setState(() {
+                  _scrubX = null;
+                });
+              },
+              child: Container(
+                color: Colors.transparent,
+                child: CustomPaint(painter: _WalletChartPainter(const Color(0xFF00E5FF), chartPoints, _scrubX)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimeFilter() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: const Color(0xFF141414),
+        borderRadius: BorderRadius.circular(16.r),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: ['1D', '7D', '1M', '3M', '6M', 'ALL'].map((t) {
+          bool isSelected = _selectedTimeFilter == t;
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedTimeFilter = t;
+                _scrubX = null;
+              });
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+              decoration: BoxDecoration(
+                color: isSelected ? const Color(0xFF2A2A2A) : Colors.transparent,
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Text(t, style: TextStyle(color: isSelected ? Colors.white : Colors.white.withOpacity(0.4), fontSize: 13.sp, fontWeight: FontWeight.w800)),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildGrid(BuildContext context) {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      crossAxisSpacing: 12.w,
+      mainAxisSpacing: 16.h,
+      childAspectRatio: 0.48, // Adjusted for taller cards to match mockup
       children: [
         _buildCardItem(
-          context: context,
-          name: 'Charizard VMAX',
-          set: "Champion's Path",
-          qty: 2,
-          price: '€1.179,98',
-          change: '+31.1%',
+          context,
+          'assets/images/card1.png', 
+          'Charizard VMAX', 'Shining Fates: Shiny Vault\nShiny Holo Rare • SV107/SV122',
+          'Near Mint', 'Holofoil', '1+', '€158.96', '€8.92 (5.95%)', true,
         ),
-        SizedBox(height: 12.h),
         _buildCardItem(
-          context: context,
-          name: 'Luffy Gear 5',
-          set: "OP-05",
-          qty: 1,
-          price: '€245.5',
-          change: '+36.4%',
+          context,
+          'assets/images/card2.png', 
+          'Charizard', 'Celebrations: Classic Collection\nClassic Collection • 4/102',
+          'Near Mint', 'Holofoil', '1+', '€144.00', '€0.79 (0.55%)', true,
+        ),
+        _buildCardItem(
+          context,
+          'assets/images/card3.png', 
+          'M Charizard EX', 'Evolutions\nUltra Rare • 13/108',
+          'Near Mint', 'Holofoil', '1+', '€84.50', '€2.30 (1.20%)', false,
+        ),
+        _buildCardItem(
+          context,
+          'assets/images/card4.png', 
+          'Sephiroth - 11-130L (Full Art)', 'Opus XI\nLegend • 11-130L',
+          'Near Mint', 'Foil', '1+', '€45.00', '€1.15 (2.10%)', true,
         ),
       ],
     );
   }
 
-  Widget _buildCardItem({
-    required BuildContext context,
-    required String name,
-    required String set,
-    required int qty,
-    required String price,
-    required String change,
-  }) {
+  Widget _buildCardItem(BuildContext context, String img, String title, String subtitle, String condition, String attribute, String qty, String price, String changeAmt, bool isUp) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => CardDetailsScreen(
-              title: name,
-              subtitle: set,
+              title: title,
+              subtitle: subtitle.split('\n').first,
               price: price,
-              changeAmt: change,
-              isUp: change.startsWith('+'),
+              changeAmt: changeAmt,
+              isUp: isUp,
+              imagePath: img,
             ),
           ),
         );
       },
       child: Container(
-        padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
-          color: const Color(0xFF121212),
-          borderRadius: BorderRadius.circular(20.r),
-          border: Border.all(color: Colors.white.withOpacity(0.05), width: 1.w),
+          color: const Color(0xFF090909), // Very dark card background
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: Colors.white.withOpacity(0.05)), // Subtle border from design
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 48.w,
-              height: 64.h,
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E1E1E),
-                borderRadius: BorderRadius.circular(8.r),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.1),
-                  width: 1.w,
-                ),
-              ),
-              child: Icon(
-                Icons.image_outlined,
-                color: Colors.white.withOpacity(0.2),
-                size: 20.sp,
-              ),
-            ),
-            SizedBox(width: 16.w),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    '$set • Qty: $qty',
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 13.sp,
-                    ),
-                  ),
-                ],
+              flex: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(16.r), topRight: Radius.circular(16.r)),
+                  image: DecorationImage(image: AssetImage(img), fit: BoxFit.cover),
+                ),
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  price,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17.sp,
-                    fontWeight: FontWeight.w700,
-                  ),
+            Expanded(
+              flex: 4,
+              child: Padding(
+                padding: EdgeInsets.all(12.r),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: TextStyle(color: Colors.white, fontSize: 14.sp, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    SizedBox(height: 4.h),
+                    Text(subtitle, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 10.sp, height: 1.3), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    SizedBox(height: 8.h),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(condition, style: TextStyle(color: const Color(0xFF00E5FF), fontSize: 11.sp, fontWeight: FontWeight.w700)),
+                        Text(' • $attribute', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.sp)),
+                      ],
+                    ),
+                    const Spacer(),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Qty: $qty', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.sp)),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(price, style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.w900, fontFamily: 'Inter')),
+                            SizedBox(height: 2.h),
+                            Row(
+                              children: [
+                                Icon(isUp ? Icons.arrow_drop_up : Icons.arrow_drop_down, color: isUp ? Colors.greenAccent : Colors.redAccent, size: 14.sp),
+                                Text(changeAmt, style: TextStyle(color: isUp ? Colors.greenAccent : Colors.redAccent, fontSize: 10.sp, fontWeight: FontWeight.w700)),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                SizedBox(height: 2.h),
-                Text(
-                  change,
-                  style: TextStyle(
-                    color: const Color(0xFFFFD700),
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+              ),
             ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildProAnalyticsCard(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(32.r),
-      decoration: BoxDecoration(
-        color: const Color(0xFF121212),
-        borderRadius: BorderRadius.circular(24.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05), width: 1.w),
-      ),
-      child: Column(
-        children: [
-          Image.asset(
-            'assets/images/image.png',
-            width: 70.w,
-            height: 70.w,
-            errorBuilder: (context, error, stackTrace) => Icon(
-              Icons.diamond_outlined,
-              color: const Color(0xFFFFD700),
-              size: 40.sp,
-            ),
-          ),
-          SizedBox(height: 20.h),
-          Text(
-            'Pro Analytics',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 22.sp,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            'Get detailed portfolio analytics and predictions',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 14.sp),
-          ),
-          SizedBox(height: 24.h),
-          AppPremiumButton(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ProfessionalScreen(),
-                ),
-              );
-            },
-            label: 'Upgrade to Pro',
-            height: 50.h,
-          ),
+class _WalletChartPainter extends CustomPainter {
+  final Color chartColor;
+  final List<double> normalizedPoints;
+  final double? scrubX;
+
+  _WalletChartPainter(this.chartColor, this.normalizedPoints, this.scrubX);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (normalizedPoints.isEmpty) return;
+
+    final paint = Paint()
+      ..color = chartColor
+      ..strokeWidth = 3.5
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..style = PaintingStyle.stroke;
+
+    final glowPaint = Paint()
+      ..color = chartColor.withOpacity(0.6)
+      ..strokeWidth = 10.0
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..style = PaintingStyle.stroke
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8.0);
+
+    final path = Path();
+    final fillPath = Path();
+    
+    final double stepX = size.width / (normalizedPoints.length - 1);
+    
+    double startY = size.height - (normalizedPoints[0] * size.height);
+    path.moveTo(0, startY);
+    fillPath.moveTo(0, size.height);
+    fillPath.lineTo(0, startY);
+
+    List<Offset> pointCoordinates = [Offset(0, startY)];
+
+    for (int i = 1; i < normalizedPoints.length; i++) {
+        final x = i * stepX;
+        final y = size.height - (normalizedPoints[i] * size.height);
+        pointCoordinates.add(Offset(x, y));
+        
+        final prevX = (i - 1) * stepX;
+        final prevY = size.height - (normalizedPoints[i - 1] * size.height);
+        
+        // High-tension Trading-style Bezier Curve
+        final cp1 = Offset(prevX + (x - prevX) * 0.55, prevY);
+        final cp2 = Offset(prevX + (x - prevX) * 0.45, y);
+        
+        path.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, x, y);
+        fillPath.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, x, y);
+    }
+    
+    fillPath.lineTo(size.width, size.height);
+    fillPath.close();
+
+    final gradientPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          chartColor.withOpacity(0.3),
+          chartColor.withOpacity(0.0),
         ],
-      ),
-    );
+      ).createShader(Rect.fromLTRB(0, 0, size.width, size.height))
+      ..style = PaintingStyle.fill;
+      
+    canvas.drawPath(fillPath, gradientPaint);
+    // Draw the path
+    final ui.PathMetrics pathMetrics = path.computeMetrics();
+    final Path animatedPath = Path();
+    Offset? lastPoint;
+    
+    // We need an animationValue here too for consistency, but if not provided, we draw fully
+    const double animVal = 1.0; 
+    
+    for (ui.PathMetric pathMetric in pathMetrics) {
+      final double extractLength = pathMetric.length * animVal;
+      animatedPath.addPath(
+        pathMetric.extractPath(0.0, extractLength),
+        Offset.zero,
+      );
+      lastPoint = pathMetric.getTangentForOffset(extractLength)?.position;
+    }
+
+    canvas.drawPath(animatedPath, glowPaint);
+    canvas.drawPath(animatedPath, paint);
+
+    // ── Price Label at the end ───────────────────────────────────────────
+    if (lastPoint != null) {
+      final lastPriceValue = normalizedPoints.last * 1312.07; // Wallet scale
+      final priceStr = lastPriceValue.toStringAsFixed(2);
+      
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: priceStr,
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.9),
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w900,
+            fontFamily: 'Inter',
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+
+      double textX = lastPoint.dx + 8.w;
+      double textY = lastPoint.dy - textPainter.height / 2;
+
+      if (textX + textPainter.width > size.width) {
+        textX = lastPoint.dx - textPainter.width - 8.w;
+      }
+
+      textPainter.paint(canvas, Offset(textX, textY));
+    }
+
+    double dotX;
+    double dotY;
+
+    if (scrubX != null) {
+      dotX = scrubX!.clamp(0.0, size.width);
+      
+      int segmentIndex = (dotX / stepX).floor();
+      if (segmentIndex < 0) segmentIndex = 0;
+      if (segmentIndex >= pointCoordinates.length - 1) segmentIndex = pointCoordinates.length - 2;
+
+      Offset p0 = pointCoordinates[segmentIndex];
+      Offset p1 = pointCoordinates[segmentIndex + 1];
+      
+      double t = (dotX - p0.dx) / (p1.dx - p0.dx);
+      t = t.clamp(0.0, 1.0);
+
+      double cpX = p0.dx + (p1.dx - p0.dx) / 2;
+      Offset cp1 = Offset(cpX, p0.dy);
+      Offset cp2 = Offset(cpX, p1.dy);
+
+      final u = 1 - t;
+      final tt = t * t;
+      final uu = u * u;
+      final uuu = uu * u;
+      final ttt = tt * t;
+
+      dotY = uuu * p0.dy;
+      dotY += 3 * uu * t * cp1.dy;
+      dotY += 3 * u * tt * cp2.dy;
+      dotY += ttt * p1.dy;
+    } else {
+      int defaultIndex = normalizedPoints.length - 1;
+      dotX = pointCoordinates[defaultIndex].dx;
+      dotY = pointCoordinates[defaultIndex].dy;
+    }
+
+    final dotPaint = Paint()..color = chartColor..style = PaintingStyle.fill;
+    final dotShadow = Paint()..color = chartColor.withOpacity(0.5)..style = PaintingStyle.fill;
+    
+    Offset dotPos = Offset(dotX, dotY);
+    
+    if (scrubX != null) {
+      final gridPaint = Paint()
+        ..color = chartColor.withOpacity(0.4)
+        ..strokeWidth = 1.2
+        ..style = PaintingStyle.stroke;
+      
+      final gridGlowPaint = Paint()
+        ..color = chartColor.withOpacity(0.3)
+        ..strokeWidth = 4.0
+        ..style = PaintingStyle.stroke
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
+
+      canvas.drawLine(Offset(dotPos.dx, 0), Offset(dotPos.dx, size.height), gridGlowPaint);
+      canvas.drawLine(Offset(dotPos.dx, 0), Offset(dotPos.dx, size.height), gridPaint);
+    }
+    
+    final dotGlow = Paint()
+      ..color = chartColor.withOpacity(0.4)
+      ..style = PaintingStyle.fill
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10.0);
+
+    canvas.drawCircle(dotPos, scrubX != null ? 24 : 16, dotShadow);
+    if (scrubX != null) {
+      canvas.drawCircle(dotPos, 15, dotGlow);
+    }
+    canvas.drawCircle(dotPos, 5, dotPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _WalletChartPainter oldDelegate) {
+    return oldDelegate.chartColor != chartColor || 
+           oldDelegate.normalizedPoints != normalizedPoints ||
+           oldDelegate.scrubX != scrubX;
   }
 }

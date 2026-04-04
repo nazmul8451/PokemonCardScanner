@@ -513,6 +513,14 @@ class _ProChartPainter extends CustomPainter {
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke;
 
+    final glowPaint = Paint()
+      ..color = const Color(0xFFFFCC00).withOpacity(0.6)
+      ..strokeWidth = 10.0
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..style = PaintingStyle.stroke
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8.0);
+
     final gridPaint = Paint()
       ..color = Colors.white.withOpacity(0.05)
       ..strokeWidth = 1;
@@ -563,6 +571,7 @@ class _ProChartPainter extends CustomPainter {
       }
     }
     
+    canvas.drawPath(path, glowPaint);
     canvas.drawPath(path, linePaint);
 
     // Draw grid line for the last point
